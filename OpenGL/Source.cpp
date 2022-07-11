@@ -16,6 +16,7 @@
 #include "Header.h"
 
 //VariablesGlobales
+source fuente;
 bool loadedRoom;
 room r;
 int NumTri=0;
@@ -46,6 +47,20 @@ glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
 
 int main()
 {
+    /*
+    
+    printf("Icosaedro puntos\n");
+    for (int i = 0;i < 20; i++) {
+        printf("++++++++++++++++\nTriangulo %d\n", i);
+        printf("Punto 1: x: %f, y: %f, z: %f \n", i, fuente.IcoFace[i].p0.x, fuente.IcoFace[i].p0.y, fuente.IcoFace[i].p0.z);
+        printf("Punto 2 x: %f, y: %f, z: %f \n", i, fuente.IcoFace[i].p1.x, fuente.IcoFace[i].p1.y, fuente.IcoFace[i].p1.z);
+        printf("Punto 3 x: %f, y: %f, z: %f \n", i, fuente.IcoFace[i].p2.x, fuente.IcoFace[i].p2.y, fuente.IcoFace[i].p2.z);
+        
+    }
+    */
+    
+    
+
     // glfw: initialize and configure
     // ------------------------------
     glfwInit();
@@ -109,11 +124,9 @@ int main()
     // ------------------------------------------------------------------
 
     laodRoom();
-
-    
     int numeroTriangulos = NumTri;
-    float vertices1 [108];
-    int contradork = 0;
+    float verticesCubo [108];
+    int contradorVC = 0;
     /*printf("planos %d \n", r.NP);
 
     printf("triangulos %d \n", r.p[0].NT);
@@ -127,41 +140,69 @@ int main()
 
     for (int i = 0; i < r.NP;i++) {
         for (int j = 0; j < r.p[i].NT;j++) {
-                vertices1[contradork] = r.p[i].t[j].p0.x * 0.1;
-                contradork++;
-                vertices1[contradork] = r.p[i].t[j].p0.y * 0.1;
-                contradork++;
-                vertices1[contradork] = r.p[i].t[j].p0.z * 0.1;
-                contradork++;
+                verticesCubo[contradorVC] = r.p[i].t[j].p0.x * 0.1;
+                contradorVC++;
+                verticesCubo[contradorVC] = r.p[i].t[j].p0.y * 0.1;
+                contradorVC++;
+                verticesCubo[contradorVC] = r.p[i].t[j].p0.z * 0.1;
+                contradorVC++;
 
 
-                vertices1[contradork] = r.p[i].t[j].p1.x * 0.1;
-                contradork++;
-                vertices1[contradork] = r.p[i].t[j].p1.y * 0.1;
-                contradork++;
-                vertices1[contradork] = r.p[i].t[j].p1.z * 0.1;
-                contradork++;
+                verticesCubo[contradorVC] = r.p[i].t[j].p1.x * 0.1;
+                contradorVC++;
+                verticesCubo[contradorVC] = r.p[i].t[j].p1.y * 0.1;
+                contradorVC++;
+                verticesCubo[contradorVC] = r.p[i].t[j].p1.z * 0.1;
+                contradorVC++;
 
 
-                vertices1[contradork] = r.p[i].t[j].p2.x * 0.1;
-                contradork++;
-                vertices1[contradork] = r.p[i].t[j].p2.y * 0.1;
-                contradork++;
-                vertices1[contradork] = r.p[i].t[j].p2.z * 0.1;
-                contradork++;
+                verticesCubo[contradorVC] = r.p[i].t[j].p2.x * 0.1;
+                contradorVC++;
+                verticesCubo[contradorVC] = r.p[i].t[j].p2.y * 0.1;
+                contradorVC++;
+                verticesCubo[contradorVC] = r.p[i].t[j].p2.z * 0.1;
+                contradorVC++;
 
         }
     }
 
+    float verticesIcosaedro[180];
+    int contradorIC = 0;
+    for (int i = 0;i < 20; i++) {
+        verticesIcosaedro[contradorIC] = fuente.IcoFace[i].p0.x;
+        contradorIC++;
+        verticesIcosaedro[contradorIC] = fuente.IcoFace[i].p0.y;
+        contradorIC++;
+        verticesIcosaedro[contradorIC] = fuente.IcoFace[i].p0.z;
+        contradorIC++;
+
+        verticesIcosaedro[contradorIC] = fuente.IcoFace[i].p1.x;
+        contradorIC++;
+        verticesIcosaedro[contradorIC] = fuente.IcoFace[i].p1.y;
+        contradorIC++;
+        verticesIcosaedro[contradorIC] = fuente.IcoFace[i].p1.z;
+        contradorIC++;
+
+        verticesIcosaedro[contradorIC] = fuente.IcoFace[i].p2.x;
+        contradorIC++;
+        verticesIcosaedro[contradorIC] = fuente.IcoFace[i].p2.y;
+        contradorIC++;
+        verticesIcosaedro[contradorIC] = fuente.IcoFace[i].p2.z;
+        contradorIC++;
+    }
+
+    
+
+
 
 
     // first, configure the cube's VAO (and VBO)
-    unsigned int VBO, cubeVAO;
+    unsigned int VBO[2], cubeVAO;
     glGenVertexArrays(1, &cubeVAO);
-    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &VBO[0]);
 
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices1), vertices1, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(verticesCubo), verticesCubo, GL_STATIC_DRAW);
 
     glBindVertexArray(cubeVAO);
 
@@ -172,10 +213,16 @@ int main()
 
     // second, configure the light's VAO (VBO stays the same; the vertices are the same for the light object which is also a 3D cube)
     unsigned int lightCubeVAO;
+    glGenBuffers(1, &VBO[1]);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(verticesIcosaedro), verticesIcosaedro, GL_STATIC_DRAW);
+
+
     glGenVertexArrays(1, &lightCubeVAO);
     glBindVertexArray(lightCubeVAO);
 
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    //glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
     // position attribute
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
@@ -226,7 +273,7 @@ int main()
 
         // render the cube
         glBindVertexArray(cubeVAO);
-        //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
 
@@ -241,7 +288,7 @@ int main()
         lightCubeShader.setMat4("model", model);
 
         glBindVertexArray(lightCubeVAO);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        glDrawArrays(GL_TRIANGLES, 0, 60);
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
@@ -254,7 +301,8 @@ int main()
 // ------------------------------------------------------------------------
     glDeleteVertexArrays(1, &cubeVAO);
     glDeleteVertexArrays(1, &lightCubeVAO);
-    glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &VBO[0]);
+    glDeleteBuffers(1, &VBO[1]);
 
     // glfw: terminate, clearing all previously allocated GLFW resources.
     // ------------------------------------------------------------------
