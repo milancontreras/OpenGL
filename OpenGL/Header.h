@@ -662,6 +662,17 @@ public:
 
 };
 //---------------------------------------------------------------------------
+struct reflection { //Respuesta al proceso de trazado de rayos.
+    point r[MaxNPoints];                    //Puntos de aplicaci�n
+    double d[MaxNPoints];                   //Distancia entre punto y punto
+    int idTriangle[MaxNPoints];             //Id �nico del tri�ngulo por cuarto donde se choc�
+    int Plane[MaxNPoints];                  //Nro. del plano por cuarto donde se choc�
+    int Triangle[MaxNPoints];               //Nro. del tri�ngulo por plano donde se choc�
+    int N;                                  //JFLN: Number of reflections
+    bool lost;                              //JFLN: If lost equal true, it's a reflection of a lost ray
+    int Ray;                                //JFLN: Number of RAY in preview
+};
+//---------------------------------------------------------------------------
 class room {
 public:
     int			NP;		//Number of Planes
@@ -763,6 +774,7 @@ public:
 
     };
 
+    /*
     double IntersectionDistance(vector1 v, vector1 n, point vp, point o) {
         // n -> vector normal del plano
         //v -> rayo
@@ -783,6 +795,23 @@ public:
         else {
             return (n * Vd) / m;
         }
+    };
+    */
+
+    double IntersectionDistance(vector1 n, point p, vector1 u, point o) {
+        /*JFLN:
+                vector n is the normal vector of the plane
+                point p is one of the vertex of the plane
+                vector u is the ray
+                point o is the initial position of the ray
+        */
+        double d, m;
+        m = n * u;
+        //JFLN: Has to have an error tolerance
+        if (m == 0)
+            return -1;
+        d = (n * (p - o)) / m;
+        return d;
     };
 
 
@@ -820,6 +849,7 @@ public:
         p = tp;
         NP += N;
     };
+
     /*
     void NewReceptor(int N) {
         int R;
@@ -904,8 +934,8 @@ public:
         return v2;
 
     };
-    /*
-    reflection* RayTracing(point origen, vector* Rays, int NRAYS) {
+    
+    reflection* RayTracing(point origen, vector1* Rays, int NRAYS) {
 
         reflection* ry;
         ry = NULL;
@@ -928,7 +958,7 @@ public:
             p3;
 
         bool Stop;  //Bandera para detener el procedimiento
-        vector v;   //vector incidente
+        vector1 v;   //vector incidente
         point o;    //punto de partida (origen del vector incidente)
 
         ry = new reflection[NRAYS];
@@ -1017,9 +1047,12 @@ public:
         }
         return ry;
     };
-    */
+    
+
 };
+
 //---------------------------------------------------------------------------
+
 class source {
 public:
     point p;                //Posici�n
@@ -1040,7 +1073,7 @@ public:
         Color.G = 0.5;
         Color.B = 0.5;
 
-        VisualRadius = 0.3;
+        VisualRadius = 0.1;
 
         //create icosaedron
         double S, R;

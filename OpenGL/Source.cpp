@@ -21,6 +21,10 @@ bool loadedRoom;
 room r;
 int NumTri=0;
 
+//tamaño
+float tamnC = 0.1;
+float tamnI = 0.1;
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
@@ -43,22 +47,10 @@ float lastFrame = 0.0f;
 
 //Exercise 13
 //lighting
-glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
+glm::vec3 lightPos(1.2f, 0.0f, 0.0f);
 
 int main()
 {
-    /*
-    
-    printf("Icosaedro puntos\n");
-    for (int i = 0;i < 20; i++) {
-        printf("++++++++++++++++\nTriangulo %d\n", i);
-        printf("Punto 1: x: %f, y: %f, z: %f \n", i, fuente.IcoFace[i].p0.x, fuente.IcoFace[i].p0.y, fuente.IcoFace[i].p0.z);
-        printf("Punto 2 x: %f, y: %f, z: %f \n", i, fuente.IcoFace[i].p1.x, fuente.IcoFace[i].p1.y, fuente.IcoFace[i].p1.z);
-        printf("Punto 3 x: %f, y: %f, z: %f \n", i, fuente.IcoFace[i].p2.x, fuente.IcoFace[i].p2.y, fuente.IcoFace[i].p2.z);
-        
-    }
-    */
-    
     
 
     // glfw: initialize and configure
@@ -109,7 +101,7 @@ int main()
 
 
     //glEnable(GL_BLEND);
-    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 
     //Exercise 13 Task 1
@@ -140,27 +132,27 @@ int main()
 
     for (int i = 0; i < r.NP;i++) {
         for (int j = 0; j < r.p[i].NT;j++) {
-                verticesCubo[contradorVC] = r.p[i].t[j].p0.x * 0.1;
+                verticesCubo[contradorVC] = r.p[i].t[j].p0.x * tamnC;
                 contradorVC++;
-                verticesCubo[contradorVC] = r.p[i].t[j].p0.y * 0.1;
+                verticesCubo[contradorVC] = r.p[i].t[j].p0.y * tamnC;
                 contradorVC++;
-                verticesCubo[contradorVC] = r.p[i].t[j].p0.z * 0.1;
-                contradorVC++;
-
-
-                verticesCubo[contradorVC] = r.p[i].t[j].p1.x * 0.1;
-                contradorVC++;
-                verticesCubo[contradorVC] = r.p[i].t[j].p1.y * 0.1;
-                contradorVC++;
-                verticesCubo[contradorVC] = r.p[i].t[j].p1.z * 0.1;
+                verticesCubo[contradorVC] = r.p[i].t[j].p0.z * tamnC;
                 contradorVC++;
 
 
-                verticesCubo[contradorVC] = r.p[i].t[j].p2.x * 0.1;
+                verticesCubo[contradorVC] = r.p[i].t[j].p1.x * tamnC;
                 contradorVC++;
-                verticesCubo[contradorVC] = r.p[i].t[j].p2.y * 0.1;
+                verticesCubo[contradorVC] = r.p[i].t[j].p1.y * tamnC;
                 contradorVC++;
-                verticesCubo[contradorVC] = r.p[i].t[j].p2.z * 0.1;
+                verticesCubo[contradorVC] = r.p[i].t[j].p1.z * tamnC;
+                contradorVC++;
+
+
+                verticesCubo[contradorVC] = r.p[i].t[j].p2.x * tamnC;
+                contradorVC++;
+                verticesCubo[contradorVC] = r.p[i].t[j].p2.y * tamnC;
+                contradorVC++;
+                verticesCubo[contradorVC] = r.p[i].t[j].p2.z * tamnC;
                 contradorVC++;
 
         }
@@ -169,29 +161,76 @@ int main()
     float verticesIcosaedro[180];
     int contradorIC = 0;
     for (int i = 0;i < 20; i++) {
-        verticesIcosaedro[contradorIC] = fuente.IcoFace[i].p0.x;
+        verticesIcosaedro[contradorIC] = fuente.IcoFace[i].p0.x * tamnI;
         contradorIC++;
-        verticesIcosaedro[contradorIC] = fuente.IcoFace[i].p0.y;
+        verticesIcosaedro[contradorIC] = fuente.IcoFace[i].p0.y * tamnI;
         contradorIC++;
-        verticesIcosaedro[contradorIC] = fuente.IcoFace[i].p0.z;
-        contradorIC++;
-
-        verticesIcosaedro[contradorIC] = fuente.IcoFace[i].p1.x;
-        contradorIC++;
-        verticesIcosaedro[contradorIC] = fuente.IcoFace[i].p1.y;
-        contradorIC++;
-        verticesIcosaedro[contradorIC] = fuente.IcoFace[i].p1.z;
+        verticesIcosaedro[contradorIC] = fuente.IcoFace[i].p0.z * tamnI;
         contradorIC++;
 
-        verticesIcosaedro[contradorIC] = fuente.IcoFace[i].p2.x;
+        verticesIcosaedro[contradorIC] = fuente.IcoFace[i].p1.x * tamnI;
         contradorIC++;
-        verticesIcosaedro[contradorIC] = fuente.IcoFace[i].p2.y;
+        verticesIcosaedro[contradorIC] = fuente.IcoFace[i].p1.y * tamnI;
         contradorIC++;
-        verticesIcosaedro[contradorIC] = fuente.IcoFace[i].p2.z;
+        verticesIcosaedro[contradorIC] = fuente.IcoFace[i].p1.z * tamnI;
+        contradorIC++;
+
+        verticesIcosaedro[contradorIC] = fuente.IcoFace[i].p2.x * tamnI;
+        contradorIC++;
+        verticesIcosaedro[contradorIC] = fuente.IcoFace[i].p2.y * tamnI;
+        contradorIC++;
+        verticesIcosaedro[contradorIC] = fuente.IcoFace[i].p2.z * tamnI;
         contradorIC++;
     }
 
+
+    fuente.createRays(20);
     
+    printf("Rayos\n");
+
+
+    for (int i = 0; i < 20; i++) {
+        printf("Rayos: x: %f, y: %f, z: %f\n", fuente.Rays[i].x, fuente.Rays[i].y, fuente.Rays[i].z);
+    }
+
+
+    point origen;
+    origen.x = 0.0;
+    origen.y = 0.0;
+    origen.z = 0.0;
+
+    reflection *arrayreflecciones;
+
+    arrayreflecciones = r.RayTracing(origen, fuente.Rays, fuente.NRAYS);
+
+    
+    for (int i = 0; i < MaxNPoints; i++) {
+        printf("punto de golpe: x: %f, y: %f, z: %f\n", arrayreflecciones[1].r[i].x, arrayreflecciones[1].r[i].y, arrayreflecciones[1].r[i].z);
+    }
+    
+    
+
+    reflection arrayDePuntosDeChoque = arrayreflecciones[1];
+
+
+    point puntoDePrueba;
+    
+    point puntoDeOrigen;
+
+    puntoDeOrigen.x = arrayreflecciones[1].r[0].x * tamnC;
+    puntoDeOrigen.y = arrayreflecciones[1].r[0].y * tamnC;
+    puntoDeOrigen.z = arrayreflecciones[1].r[0].z * tamnC;
+
+    puntoDePrueba.x = arrayreflecciones[1].r[1].x * tamnC;
+    puntoDePrueba.y = arrayreflecciones[1].r[1].y * tamnC;
+    puntoDePrueba.z = arrayreflecciones[1].r[1].z * tamnC;
+
+
+    
+    
+    
+
+
 
 
 
@@ -227,6 +266,10 @@ int main()
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
+
+
+    double tiempo1=0;
+    int contadorTemporal=0;
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window))
@@ -244,7 +287,7 @@ int main()
         // render
 // ------
         //glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
-        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+        glClearColor(0.3f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // be sure to activate shader when setting uniforms/drawing objects
@@ -272,9 +315,13 @@ int main()
         lightingShader.setMat4("model", model);
 
         // render the cube
-        glBindVertexArray(cubeVAO);
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        glBindVertexArray(cubeVAO);      
         glDrawArrays(GL_TRIANGLES, 0, 36);
+
+
+
+
+        
 
 
         
@@ -283,13 +330,82 @@ int main()
         lightCubeShader.setMat4("projection", projection);
         lightCubeShader.setMat4("view", view);
         model = glm::mat4(1.0f);
-        model = glm::translate(model, lightPos);
-        model = glm::scale(model, glm::vec3(0.2f)); // a smaller cube
+        //model = glm::translate(model, lightPos);
+        //model = glm::scale(model, glm::vec3(0.1f)); // a smaller cube
         lightCubeShader.setMat4("model", model);
 
         glBindVertexArray(lightCubeVAO);
         glDrawArrays(GL_TRIANGLES, 0, 60);
 
+
+        //
+        // 
+        // also draw the lamp object
+        lightCubeShader.use();
+        lightCubeShader.setMat4("projection", projection);
+        lightCubeShader.setMat4("view", view);
+        model = glm::mat4(1.0f);
+        
+        /* 
+        if ((puntoDeOrigen + ((puntoDePrueba) * (glfwGetTime() - tiempo1) * 0.05) == puntoDePrueba)) {
+
+            tiempo1 = glfwGetTime();
+            puntoDeOrigen = puntoDePrueba;
+            puntoDePrueba.x;
+
+            contadorTemporal++;
+            puntoDePrueba.x = arrayreflecciones[1].r[contadorTemporal].x * tamnC;
+            puntoDePrueba.y = arrayreflecciones[1].r[contadorTemporal].y * tamnC;
+            puntoDePrueba.z = arrayreflecciones[1].r[contadorTemporal].z * tamnC;
+        }
+
+        printf("Tiempo: %f", glfwGetTime() *0.05);
+
+        //model = glm::translate(model, glm::vec3((puntoDePrueba.x - puntoDeOrigen.x) * (glfwGetTime()- tiempo1) * 0.05, (puntoDePrueba.y - puntoDeOrigen.y) * (glfwGetTime() - tiempo1) * 0.05, (puntoDePrueba.z - puntoDeOrigen.z) * (glfwGetTime() - tiempo1) * 0.05));
+        model = glm::translate(model, glm::vec3(puntoDeOrigen.x + ((puntoDePrueba.x) * (glfwGetTime() - tiempo1) * 0.05), puntoDeOrigen.y + ((puntoDePrueba.y) * (glfwGetTime() - tiempo1) * 0.05), puntoDeOrigen.z + ((puntoDePrueba.z ) * (glfwGetTime() - tiempo1) * 0.05)));
+
+        */
+
+
+        
+        //model = glm::translate(model, glm::vec3(puntoDePrueba.x * glfwGetTime() * 0.05, puntoDePrueba.y * glfwGetTime() * 0.05, puntoDePrueba.z * glfwGetTime() * 0.05));
+        
+        if ( (puntoDeOrigen.distancia(puntoDePrueba) * (glfwGetTime() - tiempo1) * SPEED) >= puntoDeOrigen.distancia(puntoDePrueba)) {
+
+            tiempo1 = glfwGetTime();
+            puntoDeOrigen = puntoDePrueba;
+
+            contadorTemporal++;
+            puntoDePrueba.x = arrayreflecciones[1].r[contadorTemporal].x * tamnC;
+            puntoDePrueba.y = arrayreflecciones[1].r[contadorTemporal].y * tamnC;
+            puntoDePrueba.z = arrayreflecciones[1].r[contadorTemporal].z * tamnC;
+        };
+
+
+
+
+        //model = glm::translate(model, glm::vec3((puntoDePrueba.x - puntoDeOrigen.x) * (glfwGetTime()- tiempo1) * 0.05, (puntoDePrueba.y - puntoDeOrigen.y) * (glfwGetTime() - tiempo1) * 0.05, (puntoDePrueba.z - puntoDeOrigen.z) * (glfwGetTime() - tiempo1) * 0.05));
+        model = glm::translate(model, glm::vec3(puntoDeOrigen.x + ((puntoDePrueba.x- puntoDeOrigen.x) * (glfwGetTime() - tiempo1) * SPEED), puntoDeOrigen.y + ((puntoDePrueba.y- puntoDeOrigen.y) * (glfwGetTime() - tiempo1) * SPEED), puntoDeOrigen.z + ((puntoDePrueba.z- puntoDeOrigen.z) * (glfwGetTime() - tiempo1) * SPEED)));
+
+
+
+
+
+
+
+
+        model = glm::scale(model, glm::vec3(0.01f)); // a smaller cube
+        lightCubeShader.setMat4("model", model);
+
+        glBindVertexArray(lightCubeVAO);
+        glDrawArrays(GL_TRIANGLES, 0, 60);
+
+        //glEnableClientState(GL_VERTEX_ARRAY);
+        //glBindVertexArray(*pointVertex);
+        //glVertexPointer(3, GLfloat, 0, pointVertex);
+        //glDrawArrays(GL_POINT, 0, 1);
+
+        //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
@@ -319,13 +435,13 @@ void processInput(GLFWwindow* window)
         glfwSetWindowShouldClose(window, true);
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera.ProcessKeyboard(FORWARD, deltaTime);
+        camera.ProcessKeyboard(FORWARD, deltaTime * 0.5);
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera.ProcessKeyboard(BACKWARD, deltaTime);
+        camera.ProcessKeyboard(BACKWARD, deltaTime * 0.5);
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.ProcessKeyboard(LEFT, deltaTime);
+        camera.ProcessKeyboard(LEFT, deltaTime * 0.5);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.ProcessKeyboard(RIGHT, deltaTime);
+        camera.ProcessKeyboard(RIGHT, deltaTime * 0.5);
 
     //If I want to stay in ground level (xz plane)
     //camera.Position.y = 0.0f;
