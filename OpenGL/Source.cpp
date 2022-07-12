@@ -289,6 +289,7 @@ int main()
         //glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
         glClearColor(0.3f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        //glClear(GL_DEPTH_BUFFER_BIT);
 
         // be sure to activate shader when setting uniforms/drawing objects
         lightingShader.use();
@@ -384,8 +385,8 @@ int main()
 
 
 
-        //model = glm::translate(model, glm::vec3((puntoDePrueba.x - puntoDeOrigen.x) * (glfwGetTime()- tiempo1) * 0.05, (puntoDePrueba.y - puntoDeOrigen.y) * (glfwGetTime() - tiempo1) * 0.05, (puntoDePrueba.z - puntoDeOrigen.z) * (glfwGetTime() - tiempo1) * 0.05));
-        model = glm::translate(model, glm::vec3(puntoDeOrigen.x + ((puntoDePrueba.x- puntoDeOrigen.x) * (glfwGetTime() - tiempo1) * SPEED), puntoDeOrigen.y + ((puntoDePrueba.y- puntoDeOrigen.y) * (glfwGetTime() - tiempo1) * SPEED), puntoDeOrigen.z + ((puntoDePrueba.z- puntoDeOrigen.z) * (glfwGetTime() - tiempo1) * SPEED)));
+        //model = glm::translate(model, glm::vec3(puntoDeOrigen.x + ((puntoDePrueba.x- puntoDeOrigen.x) * (glfwGetTime() - tiempo1) * SPEED), puntoDeOrigen.y + ((puntoDePrueba.y- puntoDeOrigen.y) * (glfwGetTime() - tiempo1) * SPEED), puntoDeOrigen.z + ((puntoDePrueba.z- puntoDeOrigen.z) * (glfwGetTime() - tiempo1) * SPEED)));
+        model = glm::translate(model, glm::vec3(puntoDeOrigen.x + ((puntoDePrueba.x - puntoDeOrigen.x)) * (glfwGetTime() - tiempo1) * SPEED, puntoDeOrigen.y + ((puntoDePrueba.y - puntoDeOrigen.y)) * (glfwGetTime() - tiempo1) * SPEED, puntoDeOrigen.z + ((puntoDePrueba.z - puntoDeOrigen.z) * (glfwGetTime() - tiempo1)) * SPEED));
 
 
 
@@ -405,7 +406,7 @@ int main()
         //glVertexPointer(3, GLfloat, 0, pointVertex);
         //glDrawArrays(GL_POINT, 0, 1);
 
-        //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
