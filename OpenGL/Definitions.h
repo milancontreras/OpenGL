@@ -11,7 +11,7 @@
 //Constants------------------------------------------------------------------
 #define NUM_COLORS          4       //Numero de colores para el mapa de calor
 #define MAXDOUBLE           1000000 //Numero grande por default
-#define SPEED               0.3     //Velocidad de animaci�n
+#define SPEED               0.9     //Velocidad de animaci�n
 #define V_SON               340.0   //Velocidad del sonido
 #define PI                  3.1415926535897932384626433832795
 #define MaxNPoints          200     //maximum Number of points

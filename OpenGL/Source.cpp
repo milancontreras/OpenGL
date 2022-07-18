@@ -25,20 +25,19 @@ int NumTri=0;
 float tamnC = 0.1;
 float tamnI = 0.1;
 
+//FUNCIONES
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow* window);
 void laodRoom();
-double aunguloAlpha(point origen, point destino);
-double aunguloBeta(point origen, point destino);
 
 
-// settings
+// Configuraciones de pantalla
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 800;
 
-// camera
+// camara
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
@@ -48,9 +47,8 @@ bool firstMouse = true;
 float deltaTime = 0.0f;	// time between current frame and last frame
 float lastFrame = 0.0f;
 
-//Exercise 13
-//lighting
-glm::vec3 lightPos(1.2f, 0.0f, 0.0f);
+//
+//glm::vec3 lightPos(1.2f, 0.0f, 0.0f);
 
 int main()
 {
@@ -98,35 +96,28 @@ int main()
 
 
     // configure global opengl state
-    // -----------------------------
+    // ----------------------------- 
+    
     //glEnable(GL_DEPTH_TEST);
-
-
-
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-
+    //Shaders
     Shader IcosaedroShader("shader_lightcube.vs","shader_lightcube.fs");
     Shader CuboShader("shader_1.vs", "shader_1.fs");
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
 
-    laodRoom();
-    int numeroTriangulos = NumTri;
-    float verticesCubo [108];
-    int contradorVC = 0;
-    /*printf("planos %d \n", r.NP);
 
-    printf("triangulos %d \n", r.p[0].NT);
-    printf("triangulos %d \n", r.p[1].NT);
-    printf("triangulos %d \n", r.p[2].NT);
-    printf("triangulos %d \n", r.p[3].NT);
-    printf("triangulos %d \n", r.p[4].NT);
-    printf("triangulos %d \n", r.p[5].NT);*/
-    
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------
+    //----------------------------------------------------------------- GENERACION VERTICES DEL CUBO--------------------------------------------------------------
+    //cargar el room (cubo)
+    laodRoom();
+    //int numeroTriangulos = NumTri;
+    float verticesCubo [108];
 
     //Vertices del cubo
+    int contradorVC = 0;
     for (int i = 0; i < r.NP;i++) {
         for (int j = 0; j < r.p[i].NT;j++) {
             //tamC sirve para poner el valor de 0 - 1
@@ -155,7 +146,12 @@ int main()
 
         }
     }
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------
+    //----------------------------------------------------------------- GENERACION VERTICES DEL ICOSAEDRO---------------------------------------------------------
     //Vertices del icosaedro
     float verticesIcosaedro[180];
     int contradorIC = 0;
@@ -181,8 +177,12 @@ int main()
         verticesIcosaedro[contradorIC] = fuente.IcoFace[i].p2.z * tamnI;
         contradorIC++;
     }
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------
+    //----------------------------------------------------------------- GENERACION DE RAYOS-----------------------------------------------------------------------
     //Creamos los rayos desde el icosaedro
     fuente.createRays(20);
 
@@ -197,10 +197,11 @@ int main()
     reflection *arrayreflecciones;
     arrayreflecciones = r.RayTracing(origen, fuente.Rays, fuente.NRAYS);
 
-    
+    /*
     for (int i = 0; i < 300; i++) {
         printf("punto de golpe: indice: %d, x: %.2f, y: %.2f, z: %.2f\n",i, arrayreflecciones[1].r[i].x, arrayreflecciones[1].r[i].y, arrayreflecciones[1].r[i].z);
     }
+    */
     
     
     
@@ -220,25 +221,12 @@ int main()
     puntoDeDestino.y = arrayreflecciones[1].r[1].y * tamnC;
     puntoDeDestino.z = arrayreflecciones[1].r[1].z * tamnC;
 
-
-    /*
-    double arraytemp1[50];
-    int contadorTempx = 0;
-    for (int i=0; i < 50;i++) {
-        arraytemp1[contadorTempx] = arrayreflecciones[1].r[i].x * tamnC;
-        contadorTempx++;
-        arraytemp1[contadorTempx] = arrayreflecciones[1].r[i].y * tamnC;
-        contadorTempx++;
-        arraytemp1[contadorTempx] = arrayreflecciones[1].r[i].z * tamnC;
-        contadorTempx++;
-    };
-    */
-    
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-
-
-
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------
+    //----------------------------------------------------------------- CONFIGURACION DEL VAO Y VBO---------------------------------------------------------------
 
     // first, configure the cube's VAO (and VBO)
     unsigned int VBO[3], cubeVAO;
@@ -276,13 +264,14 @@ int main()
     //glBindBuffer(GL_ARRAY_BUFFER, VBO[2]);
     //glBufferData(GL_ARRAY_BUFFER, sizeof(arraytemp1), arraytemp1, GL_STATIC_DRAW);
 
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-    double tiempoDeGeneracionDeRebote=0;
-    int contadorTemporal=0;
+    double tiempoGuardado=0; // Variable la cual permitira encerar el tiempo cada vez que el rayo tope con una pared
+    int indiceReflexion=0; // indiceDeReflexion
     // render loop
     // -----------
-    int contadora = 0;
     while (!glfwWindowShouldClose(window))
     {
         // per-frame time logic
@@ -298,20 +287,13 @@ int main()
         processInput(window);
 
         // render
-// ------
-        //glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
-        glClearColor(0.3f, 0.6f, 0.1f, 1.0f);
+        // ------
+        glClearColor(0.3f, 0.6f, 0.1f, 1.0f); //COLOR DE LA SALA
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        //glClear(GL_DEPTH_BUFFER_BIT);
 
-        // be sure to activate shader when setting uniforms/drawing objects
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------
+    //----------------------------------------------------------------- DIBUJAR EL CUBO----------------------------------------------------------------------------
         CuboShader.use();
-        //lightingShader.setVec3("objectColor", 1.0f, 1.0f, 1.0f);
-       // lightingShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
-        //lightingShader.setVec3("lightPos", lightPos);
-        //lightingShader.setVec3("viewPos", camera.Position);
-
-        // view/projection transformations
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
         glm::mat4 view = camera.GetViewMatrix();
 
@@ -324,10 +306,15 @@ int main()
         glm::mat4 model = glm::mat4(1.0f);
         CuboShader.setMat4("model", model);
 
-        // render the cube
+        // render the object
         glBindVertexArray(cubeVAO);      
         glDrawArrays(GL_TRIANGLES, 0, 36);
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------
+       
 
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------
+    //----------------------------------------------------------------- DIBUJAR EL ICOSAEDRO (FUENTE)-------------------------------------------------------------
     
         // Dibujar el icosaedro
         IcosaedroShader.use();
@@ -340,48 +327,32 @@ int main()
 
         glBindVertexArray(lightCubeVAO);
         glDrawArrays(GL_TRIANGLES, 0, 60);
-
+        //------------------------------------------------------------------------------------------------------------------------------------------------------------
+        //------------------------------------------------------------------------------------------------------------------------------------------------------------
         
-        /* 
-        if ((puntoDeOrigen + ((puntoDePrueba) * (glfwGetTime() - tiempo1) * 0.05) == puntoDePrueba)) {
 
-            tiempo1 = glfwGetTime();
-            puntoDeOrigen = puntoDePrueba;
-            puntoDePrueba.x;
 
-            contadorTemporal++;
-            puntoDePrueba.x = arrayreflecciones[1].r[contadorTemporal].x * tamnC;
-            puntoDePrueba.y = arrayreflecciones[1].r[contadorTemporal].y * tamnC;
-            puntoDePrueba.z = arrayreflecciones[1].r[contadorTemporal].z * tamnC;
-        }
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------
+    //----------------------------------------------------------------- DIBUJAR EL ICOSAEDRO (RAYO)---------------------------------------------------------------
 
-        printf("Tiempo: %f", glfwGetTime() *0.05);
+        float velocidadEnEje = SPEED / puntoDeOrigen.distancia(puntoDeDestino); // Velocidad la cual debera ser multiplicado cada eje
 
-        //model = glm::translate(model, glm::vec3((puntoDePrueba.x - puntoDeOrigen.x) * (glfwGetTime()- tiempo1) * 0.05, (puntoDePrueba.y - puntoDeOrigen.y) * (glfwGetTime() - tiempo1) * 0.05, (puntoDePrueba.z - puntoDeOrigen.z) * (glfwGetTime() - tiempo1) * 0.05));
-        model = glm::translate(model, glm::vec3(puntoDeOrigen.x + ((puntoDePrueba.x) * (glfwGetTime() - tiempo1) * 0.05), puntoDeOrigen.y + ((puntoDePrueba.y) * (glfwGetTime() - tiempo1) * 0.05), puntoDeOrigen.z + ((puntoDePrueba.z ) * (glfwGetTime() - tiempo1) * 0.05)));
-
-        */
-
-        
-        float variableDeVelocidad = SPEED / puntoDeOrigen.distancia(puntoDeDestino);
-
-        //Encerar el tiempo
-        //Generar los nuevos puntos de origen y de destino
        
-        if ( ( (glfwGetTime() - tiempoDeGeneracionDeRebote) * SPEED) >= puntoDeOrigen.distancia(puntoDeDestino)) {
-            tiempoDeGeneracionDeRebote = glfwGetTime();
-            puntoDeOrigen = puntoDeDestino;
+        if ( ( (glfwGetTime() - tiempoGuardado) * SPEED) >= puntoDeOrigen.distancia(puntoDeDestino)) { //Entra en el if cada vez que el rayo topa con una pared
+            
+            tiempoGuardado = glfwGetTime();
+            puntoDeOrigen = puntoDeDestino; //El punto de origen es el punto de destino anterior
 
-            contadorTemporal++;
-            puntoDeDestino.x = arrayreflecciones[1].r[contadorTemporal].x * tamnC;
-            puntoDeDestino.y = arrayreflecciones[1].r[contadorTemporal].y * tamnC;
-            puntoDeDestino.z = arrayreflecciones[1].r[contadorTemporal].z * tamnC;
+            indiceReflexion++;
+            //Nuevo punto de destino
+            puntoDeDestino.x = arrayreflecciones[1].r[indiceReflexion].x * tamnC;
+            puntoDeDestino.y = arrayreflecciones[1].r[indiceReflexion].y * tamnC;
+            puntoDeDestino.z = arrayreflecciones[1].r[indiceReflexion].z * tamnC;
 
-            contadora++;
-            printf("%d\n", contadora);
         };
 
-        if (contadora >= MAX_NUM_REFLECTIONS) {
+        //Si llega a las 50 reflexiones deja de graficar el rayo
+        if (indiceReflexion >= MAX_NUM_REFLECTIONS) {
             puntoDeDestino.Clear();
             puntoDeOrigen.Clear();
         };
@@ -389,18 +360,20 @@ int main()
 
         //Movimiento del rayo        
         model = glm::translate(model, 
-            glm::vec3(puntoDeOrigen.x + ((puntoDeDestino.x - puntoDeOrigen.x)) * (glfwGetTime() - tiempoDeGeneracionDeRebote) * variableDeVelocidad,
-                puntoDeOrigen.y + ((puntoDeDestino.y - puntoDeOrigen.y)) * (glfwGetTime() - tiempoDeGeneracionDeRebote) * variableDeVelocidad,
-                puntoDeOrigen.z + ((puntoDeDestino.z - puntoDeOrigen.z)) * (glfwGetTime() - tiempoDeGeneracionDeRebote) * variableDeVelocidad));
+            glm::vec3(puntoDeOrigen.x + ((puntoDeDestino.x - puntoDeOrigen.x)) * (glfwGetTime() - tiempoGuardado) * velocidadEnEje,
+                puntoDeOrigen.y + ((puntoDeDestino.y - puntoDeOrigen.y)) * (glfwGetTime() - tiempoGuardado) * velocidadEnEje,
+                puntoDeOrigen.z + ((puntoDeDestino.z - puntoDeOrigen.z)) * (glfwGetTime() - tiempoGuardado) * velocidadEnEje));
 
 
-        model = glm::scale(model, glm::vec3(0.05f)); // Graficamos como un icosaedro
+        model = glm::scale(model, glm::vec3(0.05f)); // Graficamos el rayo como un icosaedro
         IcosaedroShader.setMat4("model", model);
 
+        //Renderizar el rayo
         glBindVertexArray(lightCubeVAO);
         glDrawArrays(GL_TRIANGLES, 0, 60);
 
-
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -410,9 +383,9 @@ int main()
         glfwPollEvents();
 
     }
-
+    //Limpieza de variables
     // optional: de-allocate all resources once they've outlived their purpose:
-// ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
     glDeleteVertexArrays(1, &cubeVAO);
     glDeleteVertexArrays(1, &lightCubeVAO);
     glDeleteBuffers(1, &VBO[0]);
@@ -489,7 +462,7 @@ void laodRoom() {
     if (!loadedRoom) {
         int nDivTri;
         nDivTri = 2;
-        r.NewPlanes(6);// Genearra 6 planos
+        r.NewPlanes(6);// Geneara 6 planos
         //square back
         r.p[0].NewPoints(4);// Gnererar los 4 puntos
 
