@@ -7,10 +7,10 @@ https://www.youtube.com/watch?v=HzFatL3WT6g
 En el archivo Definition.h cambiar la variable Speed para cambair la velocidad con la que se mueve el rayo
 
 ## Controles
-w => Adelante
-S => Atras
-A => Izquierda
-D=> Derecha
+w => Adelante\
+S => Atras\
+A => Izquierda\
+D=> Derecha\
 
-Mouse => rotacion de la cámara
-Rueda del mouse => Zoom in, Zoom out
+Mouse => rotacion de la cámara\
+Rueda del mouse => Zoom in, Zoom out\
