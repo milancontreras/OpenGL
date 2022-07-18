@@ -185,15 +185,6 @@ int main()
 
     //Creamos los rayos desde el icosaedro
     fuente.createRays(20);
-    /*
-    printf("Rayos\n");
-
-    
-    for (int i = 0; i < 20; i++) {
-        printf("Rayos: x: %f, y: %f, z: %f\n", fuente.Rays[i].x, fuente.Rays[i].y, fuente.Rays[i].z);
-    }
-    */
-
 
     //Punto de origen del icosaedro
     point origen;
@@ -206,11 +197,11 @@ int main()
     reflection *arrayreflecciones;
     arrayreflecciones = r.RayTracing(origen, fuente.Rays, fuente.NRAYS);
 
-    /*
-    for (int i = 0; i < MaxNPoints; i++) {
-        printf("punto de golpe: x: %f, y: %f, z: %f\n", arrayreflecciones[1].r[i].x, arrayreflecciones[1].r[i].y, arrayreflecciones[1].r[i].z);
+    
+    for (int i = 0; i < 300; i++) {
+        printf("punto de golpe: indice: %d, x: %.2f, y: %.2f, z: %.2f\n",i, arrayreflecciones[1].r[i].x, arrayreflecciones[1].r[i].y, arrayreflecciones[1].r[i].z);
     }
-    */
+    
     
     
     //Nos quedamos copn las reflexiones de solo un rayo
@@ -276,6 +267,7 @@ int main()
     int contadorTemporal=0;
     // render loop
     // -----------
+    int contadora = 0;
     while (!glfwWindowShouldClose(window))
     {
         // per-frame time logic
@@ -334,14 +326,6 @@ int main()
         glBindVertexArray(lightCubeVAO);
         glDrawArrays(GL_TRIANGLES, 0, 60);
 
-
-        //
-        // 
-        // also draw the lamp object
-        //lightCubeShader.use();
-        //lightCubeShader.setMat4("projection", projection);
-        //lightCubeShader.setMat4("view", view);
-        //model = glm::mat4(1.0f);
         
         /* 
         if ((puntoDeOrigen + ((puntoDePrueba) * (glfwGetTime() - tiempo1) * 0.05) == puntoDePrueba)) {
@@ -366,12 +350,10 @@ int main()
         
         float variableDeVelocidad = SPEED / puntoDeOrigen.distancia(puntoDeDestino);
 
-        //Movimiento del vector
+        //Encerar el tiempo
+        //Generar los nuevos puntos de origen y de destino
+       
         if ( ( (glfwGetTime() - tiempoDeGeneracionDeRebote) * SPEED) >= puntoDeOrigen.distancia(puntoDeDestino)) {
-
-            //printf("=====================================\n");
-            //printf("punto origen: x: %f, y: %f, z: %f\n", puntoDeOrigen.x, puntoDeOrigen.y, puntoDeOrigen.z);
-            //printf("punto destino: x: %f, y: %f, z: %f\n", puntoDeDestino.x, puntoDeDestino.y, puntoDeDestino.z);
             tiempoDeGeneracionDeRebote = glfwGetTime();
             puntoDeOrigen = puntoDeDestino;
 
@@ -379,28 +361,25 @@ int main()
             puntoDeDestino.x = arrayreflecciones[1].r[contadorTemporal].x * tamnC;
             puntoDeDestino.y = arrayreflecciones[1].r[contadorTemporal].y * tamnC;
             puntoDeDestino.z = arrayreflecciones[1].r[contadorTemporal].z * tamnC;
-            
+
+            contadora++;
+            printf("%d\n", contadora);
+        };
+
+        if (contadora >= MAX_NUM_REFLECTIONS) {
+            puntoDeDestino.Clear();
+            puntoDeOrigen.Clear();
         };
 
 
-
-
-        //model = glm::translate(model, glm::vec3(puntoDeOrigen.x + ((puntoDePrueba.x- puntoDeOrigen.x) * (glfwGetTime() - tiempo1) * SPEED), puntoDeOrigen.y + ((puntoDePrueba.y- puntoDeOrigen.y) * (glfwGetTime() - tiempo1) * SPEED), puntoDeOrigen.z + ((puntoDePrueba.z- puntoDeOrigen.z) * (glfwGetTime() - tiempo1) * SPEED)));
-        
+        //Movimiento del rayo        
         model = glm::translate(model, 
             glm::vec3(puntoDeOrigen.x + ((puntoDeDestino.x - puntoDeOrigen.x)) * (glfwGetTime() - tiempoDeGeneracionDeRebote) * variableDeVelocidad,
                 puntoDeOrigen.y + ((puntoDeDestino.y - puntoDeOrigen.y)) * (glfwGetTime() - tiempoDeGeneracionDeRebote) * variableDeVelocidad,
                 puntoDeOrigen.z + ((puntoDeDestino.z - puntoDeOrigen.z)) * (glfwGetTime() - tiempoDeGeneracionDeRebote) * variableDeVelocidad));
-        //model = glm::translate(model, glm::vec3(puntoDeOrigen.x + ((puntoDePrueba.x - puntoDeOrigen.x) * (glfwGetTime() - tiempoDeGeneracionDeRebote) * variable), puntoDeOrigen.y + ((puntoDePrueba.y - puntoDeOrigen.y) * (glfwGetTime() - tiempoDeGeneracionDeRebote) * variable), puntoDeOrigen.z + ((puntoDePrueba.z - puntoDeOrigen.z) * (glfwGetTime() - tiempoDeGeneracionDeRebote) * variable)));
 
 
-
-
-
-
-
-
-        model = glm::scale(model, glm::vec3(0.05f)); // a smaller cube
+        model = glm::scale(model, glm::vec3(0.05f)); // Graficamos como un icosaedro
         lightCubeShader.setMat4("model", model);
 
         glBindVertexArray(lightCubeVAO);

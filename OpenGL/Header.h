@@ -1022,7 +1022,7 @@ public:
                     ry[R].N = NReflections;                                       //JFLN: Number of reflections
 
                     //M�ximo 50 reflexiones
-                    if (NReflections > 50) {
+                    if (NReflections > MAX_NUM_REFLECTIONS) {
                         Stop = true;                  //No realizo m�s reflexiones con este rayo
                         NReflections = 0;             //Reseteo el contador de reflexiones para el siguiente rayo
                         IntersectedPlane = -1;        //Reseteo el identificador de plano intersecado
