@@ -30,6 +30,9 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow* window);
 void laodRoom();
+double aunguloAlpha(point origen, point destino);
+double aunguloBeta(point origen, point destino);
+
 
 // settings
 const unsigned int SCR_WIDTH = 800;
@@ -104,12 +107,6 @@ int main()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 
-    //Exercise 13 Task 1
-    // build and compile our shader zprogram
-    // ------------------------------------
-    //Shader lightingShader("D:/Users/mlcon/2022-A/Modelos y Simulacion/proyectos/shaders/shader_exercise13t3_colors.vs", "D:/Users/mlcon/2022-A/Modelos y Simulacion/proyectos/shaders/shader_exercise13t3_colors.fs");
-    //Shader lightCubeShader("D:/Users/mlcon/2022-A/Modelos y Simulacion/proyectos/shaders/shader_exercise13_lightcube.vs", "D:/Users/mlcon/2022-A/Modelos y Simulacion/proyectos/shaders/shader_exercise13_lightcube.fs");
-    
     Shader lightCubeShader("shader_lightcube.vs","shader_lightcube.fs");
     Shader lightingShader("shader_1.vs", "shader_1.fs");
     // set up vertex data (and buffer(s)) and configure vertex attributes
@@ -129,9 +126,10 @@ int main()
     printf("triangulos %d \n", r.p[5].NT);*/
     
 
-
+    //Vertices del cubo
     for (int i = 0; i < r.NP;i++) {
         for (int j = 0; j < r.p[i].NT;j++) {
+            //tamC sirve para poner el valor de 0 - 1
                 verticesCubo[contradorVC] = r.p[i].t[j].p0.x * tamnC;
                 contradorVC++;
                 verticesCubo[contradorVC] = r.p[i].t[j].p0.y * tamnC;
@@ -158,6 +156,7 @@ int main()
         }
     }
 
+    //Vertices del icosaedro
     float verticesIcosaedro[180];
     int contradorIC = 0;
     for (int i = 0;i < 20; i++) {
@@ -184,36 +183,41 @@ int main()
     }
 
 
+    //Creamos los rayos desde el icosaedro
     fuente.createRays(20);
-    
+    /*
     printf("Rayos\n");
 
-
+    
     for (int i = 0; i < 20; i++) {
         printf("Rayos: x: %f, y: %f, z: %f\n", fuente.Rays[i].x, fuente.Rays[i].y, fuente.Rays[i].z);
     }
+    */
 
 
+    //Punto de origen del icosaedro
     point origen;
     origen.x = 0.0;
     origen.y = 0.0;
     origen.z = 0.0;
 
-    reflection *arrayreflecciones;
 
+    //Creamos las reflexiones de los rayos
+    reflection *arrayreflecciones;
     arrayreflecciones = r.RayTracing(origen, fuente.Rays, fuente.NRAYS);
 
-    
+    /*
     for (int i = 0; i < MaxNPoints; i++) {
         printf("punto de golpe: x: %f, y: %f, z: %f\n", arrayreflecciones[1].r[i].x, arrayreflecciones[1].r[i].y, arrayreflecciones[1].r[i].z);
     }
+    */
     
     
-
+    //Nos quedamos copn las reflexiones de solo un rayo
     reflection arrayDePuntosDeChoque = arrayreflecciones[1];
 
 
-    point puntoDePrueba;
+    point puntoDeDestino;
     
     point puntoDeOrigen;
 
@@ -221,9 +225,9 @@ int main()
     puntoDeOrigen.y = arrayreflecciones[1].r[0].y * tamnC;
     puntoDeOrigen.z = arrayreflecciones[1].r[0].z * tamnC;
 
-    puntoDePrueba.x = arrayreflecciones[1].r[1].x * tamnC;
-    puntoDePrueba.y = arrayreflecciones[1].r[1].y * tamnC;
-    puntoDePrueba.z = arrayreflecciones[1].r[1].z * tamnC;
+    puntoDeDestino.x = arrayreflecciones[1].r[1].x * tamnC;
+    puntoDeDestino.y = arrayreflecciones[1].r[1].y * tamnC;
+    puntoDeDestino.z = arrayreflecciones[1].r[1].z * tamnC;
 
 
     
@@ -268,7 +272,7 @@ int main()
 
 
 
-    double tiempo1=0;
+    double tiempoDeGeneracionDeRebote=0;
     int contadorTemporal=0;
     // render loop
     // -----------
@@ -280,6 +284,8 @@ int main()
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
+
+        
         // input
         // -----
         processInput(window);
@@ -294,18 +300,14 @@ int main()
         // be sure to activate shader when setting uniforms/drawing objects
         lightingShader.use();
         lightingShader.setVec3("objectColor", 0.2f, 1.0f, 1.0f);
-
         lightingShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
-
-        //Exercise 13 Task 2
         lightingShader.setVec3("lightPos", lightPos);
-
-        //Exercise 13 Task 3
         lightingShader.setVec3("viewPos", camera.Position);
 
         // view/projection transformations
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
         glm::mat4 view = camera.GetViewMatrix();
+
 
 
         lightingShader.setMat4("projection", projection);
@@ -319,13 +321,7 @@ int main()
         glBindVertexArray(cubeVAO);      
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
-
-
-
-        
-
-
-        
+    
         // also draw the lamp object
         lightCubeShader.use();
         lightCubeShader.setMat4("projection", projection);
@@ -342,10 +338,10 @@ int main()
         //
         // 
         // also draw the lamp object
-        lightCubeShader.use();
-        lightCubeShader.setMat4("projection", projection);
-        lightCubeShader.setMat4("view", view);
-        model = glm::mat4(1.0f);
+        //lightCubeShader.use();
+        //lightCubeShader.setMat4("projection", projection);
+        //lightCubeShader.setMat4("view", view);
+        //model = glm::mat4(1.0f);
         
         /* 
         if ((puntoDeOrigen + ((puntoDePrueba) * (glfwGetTime() - tiempo1) * 0.05) == puntoDePrueba)) {
@@ -367,26 +363,35 @@ int main()
 
         */
 
-
         
-        //model = glm::translate(model, glm::vec3(puntoDePrueba.x * glfwGetTime() * 0.05, puntoDePrueba.y * glfwGetTime() * 0.05, puntoDePrueba.z * glfwGetTime() * 0.05));
-        
-        if ( (puntoDeOrigen.distancia(puntoDePrueba) * (glfwGetTime() - tiempo1) * SPEED) >= puntoDeOrigen.distancia(puntoDePrueba)) {
+        float variableDeVelocidad = SPEED / puntoDeOrigen.distancia(puntoDeDestino);
 
-            tiempo1 = glfwGetTime();
-            puntoDeOrigen = puntoDePrueba;
+        //Movimiento del vector
+        if ( ( (glfwGetTime() - tiempoDeGeneracionDeRebote) * SPEED) >= puntoDeOrigen.distancia(puntoDeDestino)) {
+
+            //printf("=====================================\n");
+            //printf("punto origen: x: %f, y: %f, z: %f\n", puntoDeOrigen.x, puntoDeOrigen.y, puntoDeOrigen.z);
+            //printf("punto destino: x: %f, y: %f, z: %f\n", puntoDeDestino.x, puntoDeDestino.y, puntoDeDestino.z);
+            tiempoDeGeneracionDeRebote = glfwGetTime();
+            puntoDeOrigen = puntoDeDestino;
 
             contadorTemporal++;
-            puntoDePrueba.x = arrayreflecciones[1].r[contadorTemporal].x * tamnC;
-            puntoDePrueba.y = arrayreflecciones[1].r[contadorTemporal].y * tamnC;
-            puntoDePrueba.z = arrayreflecciones[1].r[contadorTemporal].z * tamnC;
+            puntoDeDestino.x = arrayreflecciones[1].r[contadorTemporal].x * tamnC;
+            puntoDeDestino.y = arrayreflecciones[1].r[contadorTemporal].y * tamnC;
+            puntoDeDestino.z = arrayreflecciones[1].r[contadorTemporal].z * tamnC;
+            
         };
 
 
 
 
         //model = glm::translate(model, glm::vec3(puntoDeOrigen.x + ((puntoDePrueba.x- puntoDeOrigen.x) * (glfwGetTime() - tiempo1) * SPEED), puntoDeOrigen.y + ((puntoDePrueba.y- puntoDeOrigen.y) * (glfwGetTime() - tiempo1) * SPEED), puntoDeOrigen.z + ((puntoDePrueba.z- puntoDeOrigen.z) * (glfwGetTime() - tiempo1) * SPEED)));
-        model = glm::translate(model, glm::vec3(puntoDeOrigen.x + ((puntoDePrueba.x - puntoDeOrigen.x)) * (glfwGetTime() - tiempo1) * SPEED, puntoDeOrigen.y + ((puntoDePrueba.y - puntoDeOrigen.y)) * (glfwGetTime() - tiempo1) * SPEED, puntoDeOrigen.z + ((puntoDePrueba.z - puntoDeOrigen.z) * (glfwGetTime() - tiempo1)) * SPEED));
+        
+        model = glm::translate(model, 
+            glm::vec3(puntoDeOrigen.x + ((puntoDeDestino.x - puntoDeOrigen.x)) * (glfwGetTime() - tiempoDeGeneracionDeRebote) * variableDeVelocidad,
+                puntoDeOrigen.y + ((puntoDeDestino.y - puntoDeOrigen.y)) * (glfwGetTime() - tiempoDeGeneracionDeRebote) * variableDeVelocidad,
+                puntoDeOrigen.z + ((puntoDeDestino.z - puntoDeOrigen.z)) * (glfwGetTime() - tiempoDeGeneracionDeRebote) * variableDeVelocidad));
+        //model = glm::translate(model, glm::vec3(puntoDeOrigen.x + ((puntoDePrueba.x - puntoDeOrigen.x) * (glfwGetTime() - tiempoDeGeneracionDeRebote) * variable), puntoDeOrigen.y + ((puntoDePrueba.y - puntoDeOrigen.y) * (glfwGetTime() - tiempoDeGeneracionDeRebote) * variable), puntoDeOrigen.z + ((puntoDePrueba.z - puntoDeOrigen.z) * (glfwGetTime() - tiempoDeGeneracionDeRebote) * variable)));
 
 
 
@@ -395,11 +400,13 @@ int main()
 
 
 
-        model = glm::scale(model, glm::vec3(0.01f)); // a smaller cube
+        model = glm::scale(model, glm::vec3(0.05f)); // a smaller cube
         lightCubeShader.setMat4("model", model);
 
         glBindVertexArray(lightCubeVAO);
         glDrawArrays(GL_TRIANGLES, 0, 60);
+
+        
 
         //glEnableClientState(GL_VERTEX_ARRAY);
         //glBindVertexArray(*pointVertex);
@@ -443,6 +450,8 @@ void processInput(GLFWwindow* window)
         camera.ProcessKeyboard(LEFT, deltaTime * 0.5);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         camera.ProcessKeyboard(RIGHT, deltaTime * 0.5);
+    //if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+    //    camera.ProcessKeyboard( , deltaTime * 0.5);
 
     //If I want to stay in ground level (xz plane)
     //camera.Position.y = 0.0f;
@@ -653,3 +662,5 @@ void laodRoom() {
 
     }
 }
+
+
