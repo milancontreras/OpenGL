@@ -99,16 +99,16 @@ int main()
 
     // configure global opengl state
     // -----------------------------
-    glEnable(GL_DEPTH_TEST);
+    //glEnable(GL_DEPTH_TEST);
 
 
 
-    //glEnable(GL_BLEND);
+    glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 
-    Shader lightCubeShader("shader_lightcube.vs","shader_lightcube.fs");
-    Shader lightingShader("shader_1.vs", "shader_1.fs");
+    Shader IcosaedroShader("shader_lightcube.vs","shader_lightcube.fs");
+    Shader CuboShader("shader_1.vs", "shader_1.fs");
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
 
@@ -221,8 +221,18 @@ int main()
     puntoDeDestino.z = arrayreflecciones[1].r[1].z * tamnC;
 
 
-    
-    
+    /*
+    double arraytemp1[50];
+    int contadorTempx = 0;
+    for (int i=0; i < 50;i++) {
+        arraytemp1[contadorTempx] = arrayreflecciones[1].r[i].x * tamnC;
+        contadorTempx++;
+        arraytemp1[contadorTempx] = arrayreflecciones[1].r[i].y * tamnC;
+        contadorTempx++;
+        arraytemp1[contadorTempx] = arrayreflecciones[1].r[i].z * tamnC;
+        contadorTempx++;
+    };
+    */
     
 
 
@@ -231,7 +241,7 @@ int main()
 
 
     // first, configure the cube's VAO (and VBO)
-    unsigned int VBO[2], cubeVAO;
+    unsigned int VBO[3], cubeVAO;
     glGenVertexArrays(1, &cubeVAO);
     glGenBuffers(1, &VBO[0]);
 
@@ -262,6 +272,11 @@ int main()
     glEnableVertexAttribArray(0);
 
 
+    //lineas
+    //glBindBuffer(GL_ARRAY_BUFFER, VBO[2]);
+    //glBufferData(GL_ARRAY_BUFFER, sizeof(arraytemp1), arraytemp1, GL_STATIC_DRAW);
+
+
 
     double tiempoDeGeneracionDeRebote=0;
     int contadorTemporal=0;
@@ -285,16 +300,16 @@ int main()
         // render
 // ------
         //glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
-        glClearColor(0.3f, 0.1f, 0.1f, 1.0f);
+        glClearColor(0.3f, 0.6f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         //glClear(GL_DEPTH_BUFFER_BIT);
 
         // be sure to activate shader when setting uniforms/drawing objects
-        lightingShader.use();
-        lightingShader.setVec3("objectColor", 0.2f, 1.0f, 1.0f);
-        lightingShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
-        lightingShader.setVec3("lightPos", lightPos);
-        lightingShader.setVec3("viewPos", camera.Position);
+        CuboShader.use();
+        //lightingShader.setVec3("objectColor", 1.0f, 1.0f, 1.0f);
+       // lightingShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
+        //lightingShader.setVec3("lightPos", lightPos);
+        //lightingShader.setVec3("viewPos", camera.Position);
 
         // view/projection transformations
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
@@ -302,26 +317,26 @@ int main()
 
 
 
-        lightingShader.setMat4("projection", projection);
-        lightingShader.setMat4("view", view);
+        CuboShader.setMat4("projection", projection);
+        CuboShader.setMat4("view", view);
 
         // world transformation
         glm::mat4 model = glm::mat4(1.0f);
-        lightingShader.setMat4("model", model);
+        CuboShader.setMat4("model", model);
 
         // render the cube
         glBindVertexArray(cubeVAO);      
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
     
-        // also draw the lamp object
-        lightCubeShader.use();
-        lightCubeShader.setMat4("projection", projection);
-        lightCubeShader.setMat4("view", view);
+        // Dibujar el icosaedro
+        IcosaedroShader.use();
+        IcosaedroShader.setMat4("projection", projection);
+        IcosaedroShader.setMat4("view", view);
         model = glm::mat4(1.0f);
         //model = glm::translate(model, lightPos);
         //model = glm::scale(model, glm::vec3(0.1f)); // a smaller cube
-        lightCubeShader.setMat4("model", model);
+        IcosaedroShader.setMat4("model", model);
 
         glBindVertexArray(lightCubeVAO);
         glDrawArrays(GL_TRIANGLES, 0, 60);
@@ -380,17 +395,13 @@ int main()
 
 
         model = glm::scale(model, glm::vec3(0.05f)); // Graficamos como un icosaedro
-        lightCubeShader.setMat4("model", model);
+        IcosaedroShader.setMat4("model", model);
 
         glBindVertexArray(lightCubeVAO);
         glDrawArrays(GL_TRIANGLES, 0, 60);
 
-        
 
-        //glEnableClientState(GL_VERTEX_ARRAY);
-        //glBindVertexArray(*pointVertex);
-        //glVertexPointer(3, GLfloat, 0, pointVertex);
-        //glDrawArrays(GL_POINT, 0, 1);
+
 
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
