@@ -128,7 +128,6 @@ int main()
                 verticesCubo[contradorVC] = r.p[i].t[j].p0.z * tamnC;
                 contradorVC++;
 
-
                 verticesCubo[contradorVC] = r.p[i].t[j].p1.x * tamnC;
                 contradorVC++;
                 verticesCubo[contradorVC] = r.p[i].t[j].p1.y * tamnC;
@@ -156,6 +155,7 @@ int main()
     float verticesIcosaedro[180];
     int contradorIC = 0;
     for (int i = 0;i < 20; i++) {
+        //tamI sirve para poner el valor de 0 - 1
         verticesIcosaedro[contradorIC] = fuente.IcoFace[i].p0.x * tamnI;
         contradorIC++;
         verticesIcosaedro[contradorIC] = fuente.IcoFace[i].p0.y * tamnI;
