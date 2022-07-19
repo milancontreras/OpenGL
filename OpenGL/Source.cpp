@@ -22,6 +22,7 @@ room r;
 int NumTri=0;
 
 float transparency = 0.5;
+bool blDrawFuente = true;
 
 
 //tamaño
@@ -397,10 +398,12 @@ int main()
         model = glm::mat4(1.0f);
         IcosaedroShader.setMat4("model", model);
 
-
-        glBindVertexArray(lightCubeVAO);
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        glDrawArrays(GL_TRIANGLES, 0, 60);
+        if (blDrawFuente) {
+            glBindVertexArray(lightCubeVAO);
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+            glDrawArrays(GL_TRIANGLES, 0, 60);
+        }
+        
         //------------------------------------------------------------------------------------------------------------------------------------------------------------
         //------------------------------------------------------------------------------------------------------------------------------------------------------------
         
@@ -507,6 +510,15 @@ void processInput(GLFWwindow* window)
 
         };
     }
+
+    if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS) {
+        blDrawFuente = false;
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS) {
+        blDrawFuente = true;
+    }
+
         
 
     //If I want to stay in ground level (xz plane)
