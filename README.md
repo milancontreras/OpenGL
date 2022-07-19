@@ -10,7 +10,9 @@ En el archivo Definition.h cambiar la variable Speed para cambair la velocidad c
 w => Adelante\
 S => Atras\
 A => Izquierda\
-D=> Derecha\
+D => Derecha\
+Q => Disminuir Transparencia\
+E => Aumentar Transparencia\
 
 Mouse => rotacion de la cámara\
 Rueda del mouse => Zoom in, Zoom out\

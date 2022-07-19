@@ -21,6 +21,9 @@ bool loadedRoom;
 room r;
 int NumTri=0;
 
+float transparency = 0.5;
+
+
 //tamaño
 float tamnC = 0.1;
 float tamnI = 0.1;
@@ -48,7 +51,7 @@ float deltaTime = 0.0f;	// time between current frame and last frame
 float lastFrame = 0.0f;
 
 //
-//glm::vec3 lightPos(1.2f, 0.0f, 0.0f);
+glm::vec3 lightPos(1.3f, 1.0f, 1.0f);
 
 int main()
 {
@@ -114,20 +117,65 @@ int main()
     //cargar el room (cubo)
     laodRoom();
     //int numeroTriangulos = NumTri;
-    float verticesCubo [108];
+    float verticesCubo [216];
 
     //Vertices del cubo
     int contradorVC = 0;
+    float normal1[] = { 0.0,0.0,0.0 };
     for (int i = 0; i < r.NP;i++) {
         for (int j = 0; j < r.p[i].NT;j++) {
+
+            if (i == 0) {
+                normal1[0] = 0.0;
+                normal1[1] = 0.0;
+                normal1[2] = -1.0;
+            }
+            else if (i == 1) {
+                normal1[0] = 0.0;
+                normal1[1] = 0.0;
+                normal1[2] = 1.0;
+            }
+            else if (i == 2) {
+                normal1[0] = -1.0;
+                normal1[1] = 0.0;
+                normal1[2] = 0.0;
+            }
+            else if (i == 3) {
+                normal1[0] = 1.0;
+                normal1[1] = 0.0;
+                normal1[2] = 0.0;
+            }
+            else if (i == 4) {
+                normal1[0] = 0.0;
+                normal1[1] = -1.0;
+                normal1[2] = 0.0;
+            }
+            else if (i == 5) {
+                normal1[0] = 0.0;
+                normal1[1] = 1.0;
+                normal1[2] = 0.0;
+            }
+
+
             //tamC sirve para poner el valor de 0 - 1
+
+                //Vertices
                 verticesCubo[contradorVC] = r.p[i].t[j].p0.x * tamnC;
                 contradorVC++;
                 verticesCubo[contradorVC] = r.p[i].t[j].p0.y * tamnC;
                 contradorVC++;
                 verticesCubo[contradorVC] = r.p[i].t[j].p0.z * tamnC;
                 contradorVC++;
+                
+                //Normal
+                verticesCubo[contradorVC] = normal1[0];
+                contradorVC++;
+                verticesCubo[contradorVC] = normal1[1];
+                contradorVC++;
+                verticesCubo[contradorVC] = normal1[2];
+                contradorVC++;
 
+                //Vertices
                 verticesCubo[contradorVC] = r.p[i].t[j].p1.x * tamnC;
                 contradorVC++;
                 verticesCubo[contradorVC] = r.p[i].t[j].p1.y * tamnC;
@@ -135,12 +183,28 @@ int main()
                 verticesCubo[contradorVC] = r.p[i].t[j].p1.z * tamnC;
                 contradorVC++;
 
-
+                //Normal
+                verticesCubo[contradorVC] = normal1[0];
+                contradorVC++;
+                verticesCubo[contradorVC] = normal1[1];
+                contradorVC++;
+                verticesCubo[contradorVC] = normal1[2];
+                contradorVC++;
+                
+                //Vertices
                 verticesCubo[contradorVC] = r.p[i].t[j].p2.x * tamnC;
                 contradorVC++;
                 verticesCubo[contradorVC] = r.p[i].t[j].p2.y * tamnC;
                 contradorVC++;
                 verticesCubo[contradorVC] = r.p[i].t[j].p2.z * tamnC;
+                contradorVC++;
+                
+                //Normal
+                verticesCubo[contradorVC] = normal1[0];
+                contradorVC++;
+                verticesCubo[contradorVC] = normal1[1];
+                contradorVC++;
+                verticesCubo[contradorVC] = normal1[2];
                 contradorVC++;
 
         }
@@ -239,19 +303,24 @@ int main()
     glBindVertexArray(cubeVAO);
 
     // position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
 
 
     // second, configure the light's VAO (VBO stays the same; the vertices are the same for the light object which is also a 3D cube)
     unsigned int lightCubeVAO;
+    
+    glGenVertexArrays(1, &lightCubeVAO);
     glGenBuffers(1, &VBO[1]);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
     glBufferData(GL_ARRAY_BUFFER, sizeof(verticesIcosaedro), verticesIcosaedro, GL_STATIC_DRAW);
 
 
-    glGenVertexArrays(1, &lightCubeVAO);
+    
     glBindVertexArray(lightCubeVAO);
 
     //glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
@@ -259,10 +328,6 @@ int main()
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
-
-    //lineas
-    //glBindBuffer(GL_ARRAY_BUFFER, VBO[2]);
-    //glBufferData(GL_ARRAY_BUFFER, sizeof(arraytemp1), arraytemp1, GL_STATIC_DRAW);
 
     //------------------------------------------------------------------------------------------------------------------------------------------------------------
     //------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -274,6 +339,9 @@ int main()
     // -----------
     while (!glfwWindowShouldClose(window))
     {
+       
+        
+        
         // per-frame time logic
        // --------------------
         float currentFrame = glfwGetTime();
@@ -288,16 +356,20 @@ int main()
 
         // render
         // ------
-        glClearColor(0.3f, 0.6f, 0.1f, 1.0f); //COLOR DE LA SALA
+        glClearColor(0.14f, 0.25f, 0.48f, 1.0f); //COLOR DE LA SALA
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        
     //------------------------------------------------------------------------------------------------------------------------------------------------------------
     //----------------------------------------------------------------- DIBUJAR EL CUBO----------------------------------------------------------------------------
         CuboShader.use();
+        
+        CuboShader.setFloat("transparency", transparency);
+        CuboShader.setVec3("objectColor", 1.0f, 1.0f, 1.0f);
+        CuboShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
+        CuboShader.setVec3("lightPos", lightPos);
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
         glm::mat4 view = camera.GetViewMatrix();
-
-
 
         CuboShader.setMat4("projection", projection);
         CuboShader.setMat4("view", view);
@@ -307,7 +379,9 @@ int main()
         CuboShader.setMat4("model", model);
 
         // render the object
-        glBindVertexArray(cubeVAO);      
+        
+        glBindVertexArray(cubeVAO);   
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         glDrawArrays(GL_TRIANGLES, 0, 36);
     //------------------------------------------------------------------------------------------------------------------------------------------------------------
     //------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -321,11 +395,11 @@ int main()
         IcosaedroShader.setMat4("projection", projection);
         IcosaedroShader.setMat4("view", view);
         model = glm::mat4(1.0f);
-        //model = glm::translate(model, lightPos);
-        //model = glm::scale(model, glm::vec3(0.1f)); // a smaller cube
         IcosaedroShader.setMat4("model", model);
 
+
         glBindVertexArray(lightCubeVAO);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         glDrawArrays(GL_TRIANGLES, 0, 60);
         //------------------------------------------------------------------------------------------------------------------------------------------------------------
         //------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -335,10 +409,10 @@ int main()
     //------------------------------------------------------------------------------------------------------------------------------------------------------------
     //----------------------------------------------------------------- DIBUJAR EL ICOSAEDRO (RAYO)---------------------------------------------------------------
 
-        float velocidadEnEje = SPEED / puntoDeOrigen.distancia(puntoDeDestino); // Velocidad la cual debera ser multiplicado cada eje
+        float velocidadEnEje = (SPEED) / puntoDeOrigen.distancia(puntoDeDestino); // Velocidad la cual debera ser multiplicado cada eje
 
        
-        if ( ( (glfwGetTime() - tiempoGuardado) * SPEED) >= puntoDeOrigen.distancia(puntoDeDestino)) { //Entra en el if cada vez que el rayo topa con una pared
+        if ( ( (glfwGetTime() - tiempoGuardado) * (SPEED)) >= puntoDeOrigen.distancia(puntoDeDestino)) { //Entra en el if cada vez que el rayo topa con una pared
             
             tiempoGuardado = glfwGetTime();
             puntoDeOrigen = puntoDeDestino; //El punto de origen es el punto de destino anterior
@@ -357,7 +431,8 @@ int main()
             puntoDeOrigen.Clear();
         };
 
-
+        model = glm::mat4(1.0f);
+        IcosaedroShader.setMat4("model", model);
         //Movimiento del rayo        
         model = glm::translate(model, 
             glm::vec3(puntoDeOrigen.x + ((puntoDeDestino.x - puntoDeOrigen.x)) * (glfwGetTime() - tiempoGuardado) * velocidadEnEje,
@@ -365,18 +440,21 @@ int main()
                 puntoDeOrigen.z + ((puntoDeDestino.z - puntoDeOrigen.z)) * (glfwGetTime() - tiempoGuardado) * velocidadEnEje));
 
 
-        model = glm::scale(model, glm::vec3(0.05f)); // Graficamos el rayo como un icosaedro
+        model = glm::scale(model, glm::vec3(0.02f)); // Graficamos el rayo como un icosaedro
         IcosaedroShader.setMat4("model", model);
 
         //Renderizar el rayo
         glBindVertexArray(lightCubeVAO);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         glDrawArrays(GL_TRIANGLES, 0, 60);
 
     //------------------------------------------------------------------------------------------------------------------------------------------------------------
     //------------------------------------------------------------------------------------------------------------------------------------------------------------
+        
+        
 
 
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
@@ -390,6 +468,8 @@ int main()
     glDeleteVertexArrays(1, &lightCubeVAO);
     glDeleteBuffers(1, &VBO[0]);
     glDeleteBuffers(1, &VBO[1]);
+    glDeleteBuffers(1, &VBO[2]);
+
 
     // glfw: terminate, clearing all previously allocated GLFW resources.
     // ------------------------------------------------------------------
@@ -413,8 +493,21 @@ void processInput(GLFWwindow* window)
         camera.ProcessKeyboard(LEFT, deltaTime * 0.5);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         camera.ProcessKeyboard(RIGHT, deltaTime * 0.5);
-    //if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
-    //    camera.ProcessKeyboard( , deltaTime * 0.5);
+    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
+        if (transparency <= 1.0) {
+            transparency = transparency + 0.01;
+
+        };
+        
+    }
+            
+    if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
+        if (transparency >= 0.0) {
+            transparency = transparency - 0.01;
+
+        };
+    }
+        
 
     //If I want to stay in ground level (xz plane)
     //camera.Position.y = 0.0f;
@@ -625,5 +718,6 @@ void laodRoom() {
 
     }
 }
+
 
 
