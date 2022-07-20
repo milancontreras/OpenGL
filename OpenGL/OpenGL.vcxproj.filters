@@ -43,5 +43,11 @@
     <None Include="shader_lightcube.fs">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="shader_linea.fs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="shader_linea.vs">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

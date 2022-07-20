@@ -144,6 +144,8 @@
     <None Include="shader_1.vs" />
     <None Include="shader_lightcube.fs" />
     <None Include="shader_lightcube.vs" />
+    <None Include="shader_linea.fs" />
+    <None Include="shader_linea.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
