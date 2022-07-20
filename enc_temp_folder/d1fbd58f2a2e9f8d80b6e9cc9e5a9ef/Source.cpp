@@ -504,7 +504,7 @@ int main()
         puntosDinamicos[5] = puntoDeOrigen.z + ((puntoDeDestino.z - puntoDeOrigen.z)) * (glfwGetTime() - tiempoGuardado) * velocidadEnEje;
         //printf("valores de  puntos nuevo %f %f %f el contador \n/////////////////////////////////////////////////////////\n", puntosDinamicos[3], puntosDinamicos[4], puntosDinamicos[5]);
         
-        actializarVBOline(VBO[3], 0, puntosDinamicos, sizeof(puntosDinamicos), GL_ARRAY_BUFFER);
+        //actializarVBOline(VBO[3], 0, puntosDinamicos, sizeof(puntosDinamicos), GL_ARRAY_BUFFER);
         
        
 
