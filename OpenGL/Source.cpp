@@ -1,4 +1,4 @@
-#include <glad/glad.h>
+﻿#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 #include <glm/glm.hpp>
@@ -19,13 +19,13 @@
 source fuente;
 bool loadedRoom;
 room r;
-int NumTri=0;
+int NumTri = 0;
 
 float transparency = 0.5;
 bool blDrawFuente = true;
 
 
-//tama�o
+//tamaño
 float tamnC = 0.1;
 float tamnI = 0.1;
 
@@ -35,7 +35,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow* window);
 void laodRoom();
-
+void actializarVBOline(unsigned int& id, unsigned int offset, void* data, unsigned int size, unsigned int type);
 
 // Configuraciones de pantalla
 const unsigned int SCR_WIDTH = 800;
@@ -56,7 +56,7 @@ glm::vec3 lightPos(1.3f, 1.0f, 1.0f);
 
 int main()
 {
-    
+
 
     // glfw: initialize and configure
     // ------------------------------
@@ -101,14 +101,15 @@ int main()
 
     // configure global opengl state
     // ----------------------------- 
-    
+
     //glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     //Shaders
-    Shader IcosaedroShader("shader_lightcube.vs","shader_lightcube.fs");
+    Shader IcosaedroShader("shader_lightcube.vs", "shader_lightcube.fs");
     Shader CuboShader("shader_1.vs", "shader_1.fs");
+    Shader LineaShader("shader_linea.vs", "shader_linea.fs");
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
 
@@ -118,13 +119,13 @@ int main()
     //cargar el room (cubo)
     laodRoom();
     //int numeroTriangulos = NumTri;
-    float verticesCubo [216];
+    float verticesCubo[216];
 
     //Vertices del cubo
     int contradorVC = 0;
     float normal1[] = { 0.0,0.0,0.0 };
-    for (int i = 0; i < r.NP;i++) {
-        for (int j = 0; j < r.p[i].NT;j++) {
+    for (int i = 0; i < r.NP; i++) {
+        for (int j = 0; j < r.p[i].NT; j++) {
 
             if (i == 0) {
                 normal1[0] = 0.0;
@@ -161,52 +162,52 @@ int main()
             //tamC sirve para poner el valor de 0 - 1
 
                 //Vertices
-                verticesCubo[contradorVC] = r.p[i].t[j].p0.x * tamnC;
-                contradorVC++;
-                verticesCubo[contradorVC] = r.p[i].t[j].p0.y * tamnC;
-                contradorVC++;
-                verticesCubo[contradorVC] = r.p[i].t[j].p0.z * tamnC;
-                contradorVC++;
-                
-                //Normal
-                verticesCubo[contradorVC] = normal1[0];
-                contradorVC++;
-                verticesCubo[contradorVC] = normal1[1];
-                contradorVC++;
-                verticesCubo[contradorVC] = normal1[2];
-                contradorVC++;
+            verticesCubo[contradorVC] = r.p[i].t[j].p0.x * tamnC;
+            contradorVC++;
+            verticesCubo[contradorVC] = r.p[i].t[j].p0.y * tamnC;
+            contradorVC++;
+            verticesCubo[contradorVC] = r.p[i].t[j].p0.z * tamnC;
+            contradorVC++;
 
-                //Vertices
-                verticesCubo[contradorVC] = r.p[i].t[j].p1.x * tamnC;
-                contradorVC++;
-                verticesCubo[contradorVC] = r.p[i].t[j].p1.y * tamnC;
-                contradorVC++;
-                verticesCubo[contradorVC] = r.p[i].t[j].p1.z * tamnC;
-                contradorVC++;
+            //Normal
+            verticesCubo[contradorVC] = normal1[0];
+            contradorVC++;
+            verticesCubo[contradorVC] = normal1[1];
+            contradorVC++;
+            verticesCubo[contradorVC] = normal1[2];
+            contradorVC++;
 
-                //Normal
-                verticesCubo[contradorVC] = normal1[0];
-                contradorVC++;
-                verticesCubo[contradorVC] = normal1[1];
-                contradorVC++;
-                verticesCubo[contradorVC] = normal1[2];
-                contradorVC++;
-                
-                //Vertices
-                verticesCubo[contradorVC] = r.p[i].t[j].p2.x * tamnC;
-                contradorVC++;
-                verticesCubo[contradorVC] = r.p[i].t[j].p2.y * tamnC;
-                contradorVC++;
-                verticesCubo[contradorVC] = r.p[i].t[j].p2.z * tamnC;
-                contradorVC++;
-                
-                //Normal
-                verticesCubo[contradorVC] = normal1[0];
-                contradorVC++;
-                verticesCubo[contradorVC] = normal1[1];
-                contradorVC++;
-                verticesCubo[contradorVC] = normal1[2];
-                contradorVC++;
+            //Vertices
+            verticesCubo[contradorVC] = r.p[i].t[j].p1.x * tamnC;
+            contradorVC++;
+            verticesCubo[contradorVC] = r.p[i].t[j].p1.y * tamnC;
+            contradorVC++;
+            verticesCubo[contradorVC] = r.p[i].t[j].p1.z * tamnC;
+            contradorVC++;
+
+            //Normal
+            verticesCubo[contradorVC] = normal1[0];
+            contradorVC++;
+            verticesCubo[contradorVC] = normal1[1];
+            contradorVC++;
+            verticesCubo[contradorVC] = normal1[2];
+            contradorVC++;
+
+            //Vertices
+            verticesCubo[contradorVC] = r.p[i].t[j].p2.x * tamnC;
+            contradorVC++;
+            verticesCubo[contradorVC] = r.p[i].t[j].p2.y * tamnC;
+            contradorVC++;
+            verticesCubo[contradorVC] = r.p[i].t[j].p2.z * tamnC;
+            contradorVC++;
+
+            //Normal
+            verticesCubo[contradorVC] = normal1[0];
+            contradorVC++;
+            verticesCubo[contradorVC] = normal1[1];
+            contradorVC++;
+            verticesCubo[contradorVC] = normal1[2];
+            contradorVC++;
 
         }
     }
@@ -219,7 +220,7 @@ int main()
     //Vertices del icosaedro
     float verticesIcosaedro[180];
     int contradorIC = 0;
-    for (int i = 0;i < 20; i++) {
+    for (int i = 0; i < 20; i++) {
         //tamI sirve para poner el valor de 0 - 1
         verticesIcosaedro[contradorIC] = fuente.IcoFace[i].p0.x * tamnI;
         contradorIC++;
@@ -259,7 +260,7 @@ int main()
 
 
     //Creamos las reflexiones de los rayos
-    reflection *arrayreflecciones;
+    reflection* arrayreflecciones;
     arrayreflecciones = r.RayTracing(origen, fuente.Rays, fuente.NRAYS);
 
     /*
@@ -267,15 +268,15 @@ int main()
         printf("punto de golpe: indice: %d, x: %.2f, y: %.2f, z: %.2f\n",i, arrayreflecciones[1].r[i].x, arrayreflecciones[1].r[i].y, arrayreflecciones[1].r[i].z);
     }
     */
-    
-    
-    
+
+
+
     //Nos quedamos copn las reflexiones de solo un rayo
     reflection arrayDePuntosDeChoque = arrayreflecciones[1];
 
 
     point puntoDeDestino;
-    
+
     point puntoDeOrigen;
 
     puntoDeOrigen.x = arrayreflecciones[1].r[0].x * tamnC;
@@ -288,13 +289,33 @@ int main()
 
     //------------------------------------------------------------------------------------------------------------------------------------------------------------
     //------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
+ 
+    float puntosNuevos1[150];
+    float puntosDinamicos[6];
+    puntosNuevos1[0] = 0.0f;
+    puntosNuevos1[1] = 0.0f;
+    puntosNuevos1[2] = 0.0f;
+    puntosDinamicos[0] = 0.0f;
+    puntosDinamicos[1] = 0.0f;
+    puntosDinamicos[2] = 0.0f;
+    puntosDinamicos[3] = 1.2f;
+    puntosDinamicos[4] = 1.2f;
+    puntosDinamicos[5] = 0.0f;
+    int au = 1,aux=0;
+    for (int b = 3; b < 150; b++) {
+        puntosNuevos1[b] = arrayreflecciones[1].r[au].x * tamnC;
+        b++;
+        puntosNuevos1[b] = arrayreflecciones[1].r[au].y * tamnC;
+        b++;
+        puntosNuevos1[b] = arrayreflecciones[1].r[au].z * tamnC;
+        au++;
+    }
+   
     //------------------------------------------------------------------------------------------------------------------------------------------------------------
     //----------------------------------------------------------------- CONFIGURACION DEL VAO Y VBO---------------------------------------------------------------
 
     // first, configure the cube's VAO (and VBO)
-    unsigned int VBO[3], cubeVAO;
+    unsigned int VBO[4], cubeVAO;
     glGenVertexArrays(1, &cubeVAO);
     glGenBuffers(1, &VBO[0]);
 
@@ -312,8 +333,8 @@ int main()
 
 
     // second, configure the light's VAO (VBO stays the same; the vertices are the same for the light object which is also a 3D cube)
-    unsigned int lightCubeVAO;
-    
+    unsigned int lightCubeVAO, lineaVAO, lineaVAO1;
+
     glGenVertexArrays(1, &lightCubeVAO);
     glGenBuffers(1, &VBO[1]);
 
@@ -321,7 +342,7 @@ int main()
     glBufferData(GL_ARRAY_BUFFER, sizeof(verticesIcosaedro), verticesIcosaedro, GL_STATIC_DRAW);
 
 
-    
+
     glBindVertexArray(lightCubeVAO);
 
     //glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
@@ -329,20 +350,48 @@ int main()
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
+    ///////
+    glGenVertexArrays(1, &lineaVAO);
+    glGenBuffers(1, &VBO[2]);
 
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[2]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(puntosNuevos1), puntosNuevos1, GL_STATIC_DRAW);
+
+    glBindVertexArray(lineaVAO);
+
+    // position attribute
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+
+    ///////
+    glGenVertexArrays(1, &lineaVAO1);
+    glGenBuffers(1, &VBO[3]);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[3]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(puntosDinamicos), puntosDinamicos, GL_DYNAMIC_DRAW);
+
+    glBindVertexArray(lineaVAO1);
+
+    // position attribute
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    //
     //------------------------------------------------------------------------------------------------------------------------------------------------------------
     //------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-    double tiempoGuardado=0; // Variable la cual permitira encerar el tiempo cada vez que el rayo tope con una pared
-    int indiceReflexion=0; // indiceDeReflexion
+    double tiempoGuardado = 0; // Variable la cual permitira encerar el tiempo cada vez que el rayo tope con una pared
+    int indiceReflexion = 0; // indiceDeReflexion
+    int contadorGraficarVertice = 0;
+    int contador = 3;
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window))
     {
-       
-        
-        
+
+
+
         // per-frame time logic
        // --------------------
         float currentFrame = glfwGetTime();
@@ -350,7 +399,7 @@ int main()
         lastFrame = currentFrame;
 
 
-        
+
         // input
         // -----
         processInput(window);
@@ -360,12 +409,13 @@ int main()
         glClearColor(0.14f, 0.25f, 0.48f, 1.0f); //COLOR DE LA SALA
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        
-    //------------------------------------------------------------------------------------------------------------------------------------------------------------
-    //----------------------------------------------------------------- DIBUJAR EL CUBO----------------------------------------------------------------------------
+
+        //------------------------------------------------------------------------------------------------------------------------------------------------------------
+        //----------------------------------------------------------------- DIBUJAR EL CUBO----------------------------------------------------------------------------
         CuboShader.use();
-        
+
         CuboShader.setFloat("transparency", transparency);
+        printf("t: %.3f\n", transparency);
         CuboShader.setVec3("objectColor", 1.0f, 1.0f, 1.0f);
         CuboShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
         CuboShader.setVec3("lightPos", lightPos);
@@ -380,18 +430,18 @@ int main()
         CuboShader.setMat4("model", model);
 
         // render the object
-        
-        glBindVertexArray(cubeVAO);   
+
+        glBindVertexArray(cubeVAO);
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         glDrawArrays(GL_TRIANGLES, 0, 36);
-    //------------------------------------------------------------------------------------------------------------------------------------------------------------
-    //------------------------------------------------------------------------------------------------------------------------------------------------------------
-       
+        //------------------------------------------------------------------------------------------------------------------------------------------------------------
+        //------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    //------------------------------------------------------------------------------------------------------------------------------------------------------------
-    //----------------------------------------------------------------- DIBUJAR EL ICOSAEDRO (FUENTE)-------------------------------------------------------------
-    
-        // Dibujar el icosaedro
+
+        //------------------------------------------------------------------------------------------------------------------------------------------------------------
+        //----------------------------------------------------------------- DIBUJAR EL ICOSAEDRO (FUENTE)-------------------------------------------------------------
+
+            // Dibujar el icosaedro
         IcosaedroShader.use();
         IcosaedroShader.setMat4("projection", projection);
         IcosaedroShader.setMat4("view", view);
@@ -403,24 +453,34 @@ int main()
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
             glDrawArrays(GL_TRIANGLES, 0, 60);
         }
-        
+
         //------------------------------------------------------------------------------------------------------------------------------------------------------------
         //------------------------------------------------------------------------------------------------------------------------------------------------------------
-        
+
 
 
     //------------------------------------------------------------------------------------------------------------------------------------------------------------
     //----------------------------------------------------------------- DIBUJAR EL ICOSAEDRO (RAYO)---------------------------------------------------------------
-
+        
         float velocidadEnEje = (SPEED) / puntoDeOrigen.distancia(puntoDeDestino); // Velocidad la cual debera ser multiplicado cada eje
-
        
-        if ( ( (glfwGetTime() - tiempoGuardado) * (SPEED)) >= puntoDeOrigen.distancia(puntoDeDestino)) { //Entra en el if cada vez que el rayo topa con una pared
             
+        
+
+        if (((glfwGetTime() - tiempoGuardado) * (SPEED)) >= puntoDeOrigen.distancia(puntoDeDestino)) { //Entra en el if cada vez que el rayo topa con una pared
+
             tiempoGuardado = glfwGetTime();
             puntoDeOrigen = puntoDeDestino; //El punto de origen es el punto de destino anterior
+            puntosDinamicos[0] = puntoDeOrigen.x;
+            puntosDinamicos[1] = puntoDeOrigen.y;
+            puntosDinamicos[2] = puntoDeOrigen.z;
 
+            //printf("valores de  puntos nuevo %f %f %f el contador \n/////////////////////////////////////////////////////////\n/////////////////////////////////////////////////////////\n/////////////////////////////////////////////////////////\n", puntosDinamicos[0], puntosDinamicos[1], puntosDinamicos[2]);
+            //printf("valores de  puntos nuevo %f %f %f el contador es %i\n/////////////////////////////////////////////////////////\n", puntoDeOrigen.x, puntoDeOrigen.y, puntoDeOrigen.z, contador);
+            //printf("valores de  puntos nuevo %f %f %f el contador es %i\n/////////////////////////////////////////////////////////\n", puntosNuevos1[0+contador], puntosNuevos1[1 + contador], puntosNuevos1[2 + contador], contador);
+            contador += 3;
             indiceReflexion++;
+            contadorGraficarVertice++;
             //Nuevo punto de destino
             puntoDeDestino.x = arrayreflecciones[1].r[indiceReflexion].x * tamnC;
             puntoDeDestino.y = arrayreflecciones[1].r[indiceReflexion].y * tamnC;
@@ -436,28 +496,65 @@ int main()
 
         model = glm::mat4(1.0f);
         IcosaedroShader.setMat4("model", model);
-        //Movimiento del rayo        
-        model = glm::translate(model, 
-            glm::vec3(puntoDeOrigen.x + ((puntoDeDestino.x - puntoDeOrigen.x)) * (glfwGetTime() - tiempoGuardado) * velocidadEnEje,
-                puntoDeOrigen.y + ((puntoDeDestino.y - puntoDeOrigen.y)) * (glfwGetTime() - tiempoGuardado) * velocidadEnEje,
-                puntoDeOrigen.z + ((puntoDeDestino.z - puntoDeOrigen.z)) * (glfwGetTime() - tiempoGuardado) * velocidadEnEje));
+        //Movimiento del rayo
+        
+        
+
+        puntosDinamicos[3] = puntoDeOrigen.x + ((puntoDeDestino.x - puntoDeOrigen.x)) * (glfwGetTime() - tiempoGuardado) * velocidadEnEje;
+        puntosDinamicos[4] = puntoDeOrigen.y + ((puntoDeDestino.y - puntoDeOrigen.y)) * (glfwGetTime() - tiempoGuardado) * velocidadEnEje;
+        puntosDinamicos[5] = puntoDeOrigen.z + ((puntoDeDestino.z - puntoDeOrigen.z)) * (glfwGetTime() - tiempoGuardado) * velocidadEnEje;
+        //printf("valores de  puntos nuevo %f %f %f el contador \n/////////////////////////////////////////////////////////\n", puntosDinamicos[3], puntosDinamicos[4], puntosDinamicos[5]);
+        
+        actializarVBOline(VBO[3], 0, puntosDinamicos, sizeof(puntosDinamicos), GL_ARRAY_BUFFER);
+        
+       
+
+        model = glm::translate(model,
+            glm::vec3(puntosDinamicos[3], puntosDinamicos[4], puntosDinamicos[5]));
 
 
         model = glm::scale(model, glm::vec3(0.02f)); // Graficamos el rayo como un icosaedro
         IcosaedroShader.setMat4("model", model);
-
+        
         //Renderizar el rayo
         glBindVertexArray(lightCubeVAO);
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         glDrawArrays(GL_TRIANGLES, 0, 60);
+        //printf("%f", puntosNuevos[1]);
+        //------------------------------------------------------------------------------------------------------------------------------------------------------------
+        //------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    //------------------------------------------------------------------------------------------------------------------------------------------------------------
-    //------------------------------------------------------------------------------------------------------------------------------------------------------------
-        
-        
+                //intento linea
+
+            // Dibujar linea
+        LineaShader.use();
+        LineaShader.setMat4("projection", projection);
+        LineaShader.setMat4("view", view);
+        model = glm::mat4(1.0f);
+        //model = glm::translate(model, lightPos);
+        //model = glm::scale(model, glm::vec3(0.1f)); // a smaller cube
+        LineaShader.setMat4("model", model);
+
+        glBindVertexArray(lineaVAO);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        glDrawArrays(GL_LINE_STRIP, 0, contadorGraficarVertice);
 
 
+        // Dibujar linea dinamica
         
+        LineaShader.setMat4("projection", projection);
+        LineaShader.setMat4("view", view);
+        model = glm::mat4(1.0f);
+        //model = glm::translate(model, lightPos);
+        //model = glm::scale(model, glm::vec3(0.1f)); // a smaller cube
+        LineaShader.setMat4("model", model);
+
+        glBindVertexArray(lineaVAO1);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        glDrawArrays(GL_LINE_STRIP, 0, 2);
+
+
+
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
@@ -469,9 +566,12 @@ int main()
     // ------------------------------------------------------------------------
     glDeleteVertexArrays(1, &cubeVAO);
     glDeleteVertexArrays(1, &lightCubeVAO);
+    glDeleteVertexArrays(1, &lineaVAO);
+    glDeleteVertexArrays(1, &lineaVAO1);
     glDeleteBuffers(1, &VBO[0]);
     glDeleteBuffers(1, &VBO[1]);
     glDeleteBuffers(1, &VBO[2]);
+    glDeleteBuffers(1, &VBO[3]);
 
 
     // glfw: terminate, clearing all previously allocated GLFW resources.
@@ -497,17 +597,22 @@ void processInput(GLFWwindow* window)
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         camera.ProcessKeyboard(RIGHT, deltaTime * 0.5);
     if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
-        if (transparency <= 1.0) {
-            transparency = transparency + 0.01;
-
+        if (transparency >= 0.1) {
+            transparency = transparency - 0.001;
+            printf("hola");
+        }
+        else {
+            transparency = 0.1;
         };
-        
-    }
-            
-    if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
-        if (transparency >= 0.0) {
-            transparency = transparency - 0.01;
 
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
+        if (transparency <= 1.0) {
+            transparency = transparency + 0.001;
+        }
+        else {
+            transparency = 1.0;
         };
     }
 
@@ -519,7 +624,7 @@ void processInput(GLFWwindow* window)
         blDrawFuente = true;
     }
 
-        
+
 
     //If I want to stay in ground level (xz plane)
     //camera.Position.y = 0.0f;
@@ -589,7 +694,7 @@ void laodRoom() {
 
         r.p[0].PointGenTriangle();
 
-       
+
 
         //square front
         r.p[1].NewPoints(4);// Gnererar los 4 puntos
@@ -652,7 +757,7 @@ void laodRoom() {
         r.p[3].p[3].z = -2.0f;
         r.p[3].PointGenTriangle();
 
-   
+
         //square top
         r.p[4].NewPoints(4);
 
@@ -713,7 +818,7 @@ void laodRoom() {
         int cont_t = 0;
         for (int i = 0; i < r.NP; i++) {
             r.p[i].n = NormalPlano(r.p[i]);
-            for (int j = 0;j < r.p[i].NT;j++) {
+            for (int j = 0; j < r.p[i].NT; j++) {
                 r.p[i].t[j].CalculateProjection();
                 r.p[i].t[j].Centroid();
                 r.p[i].t[j].ID = cont_t;
@@ -732,4 +837,8 @@ void laodRoom() {
 }
 
 
+void actializarVBOline(unsigned int & id, unsigned int offset,void* data, unsigned int size, unsigned int type) {
 
+        glBindBuffer(type, id);
+        glBufferSubData(type, offset, size, data);
+}

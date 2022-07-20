@@ -15,10 +15,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\descargas\glad\src\glad.c">
+    <ClCompile Include="Source.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source.cpp">
+    <ClCompile Include="..\..\..\..\descargas\glad\src\glad.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -41,6 +41,12 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="shader_lightcube.fs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="shader_linea.fs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="shader_linea.vs">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
