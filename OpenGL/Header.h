@@ -678,7 +678,7 @@ public:
     int			NP;		//Number of Planes
     plane* p;		//Planes
     double		maxd;	//Maxima distancia entre dos puntos en la sala.
-    //receptor* r;     //Number of receptors (microphones)
+    //receptor* r;     //Number of receptors 
     int         NR;     //Number of receptors
 
     room() {
@@ -774,29 +774,6 @@ public:
 
     };
 
-    /*
-    double IntersectionDistance(vector1 v, vector1 n, point vp, point o) {
-        // n -> vector normal del plano
-        //v -> rayo
-        //vp -> punto del plano
-        // o origen del rayo
-        vector1 Vd;
-
-        Vd.x = vp.x - o.x;
-        Vd.y = vp.y - o.y;
-        Vd.z = vp.z - o.z;
-
-
-        double m;
-        m = v * n;
-        if (m == 0.0) {
-            return -1;
-        }
-        else {
-            return (n * Vd) / m;
-        }
-    };
-    */
 
     double IntersectionDistance(vector1 n, point p, vector1 u, point o) {
         /*JFLN:
@@ -870,30 +847,7 @@ public:
     };
     */
 
-    /*
-    void DeletePlanes(int NSelectedPlanes, int SelectedPlane[MaxNSelectedPlanes]) {
-        bool Del;
-        int P,i,j=0;
-        if(NP>0&&NSelectedPlanes>0) {
-            plane *tp;
-            tp=new plane[NP-NSelectedPlanes];
-            for(P=0; P<NP; P++) {
-                Del=false;
-                for(i=0; i<NSelectedPlanes; i++)
-                    if(P==SelectedPlane[i])
-                        Del=true;
-                if(!Del) {
-                    tp[j]=p[P];
-                    j++;
-                }
-            }
-            delete[] p;
-            p=tp;
-            NP-=NSelectedPlanes;
-        }
-    };
-    */
-
+    
     void Deleteplanes(int IP) { //IP indice del punto a borrar
         plane* tp;
         int j = 0;
@@ -1048,7 +1002,6 @@ public:
         return ry;
     };
     
-
 };
 
 //---------------------------------------------------------------------------
@@ -1216,18 +1169,13 @@ public:
 //---------------------------------------------------------------------------
 
 
-
-
-
-
-
-inline double Module(vector1 v) { //JFLN: Returns the vector's module
+inline double Module(vector1 v) { //Modulo de un vector
     double m;
     m = sqrt(v * v);
     return m;
 }
 //---------------------------------------------------------------------------
-inline vector1 VectorUnitario(vector1 v1) { //JFLN: Returns the vector's unitary vector
+inline vector1 VectorUnitario(vector1 v1) { //vector unicatio de un vector
     double m;
     vector1 v2;
     m = Module(v1);
@@ -1237,12 +1185,13 @@ inline vector1 VectorUnitario(vector1 v1) { //JFLN: Returns the vector's unitary
         v2 = v1 / m;
     return v2;
 }
-
+/*
 inline vector1 TriangleNormal(triangle t) {
     vector1 n;
     n = VectorUnitario((t.p1 - t.p0) / (t.p2 - t.p0));
     return n;
 };
+*/
 
 inline vector1 NormalPlano(plane p) {
     vector1 n;
