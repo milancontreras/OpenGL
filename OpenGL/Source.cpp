@@ -35,7 +35,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow* window);
 void laodRoom();
-void dibujarline(float verticeslinea[], unsigned int lineaVAO, unsigned int VBOlinea);
+void actializarVBOline(unsigned int& id, unsigned int offset, void* data, unsigned int size, unsigned int type);
 
 // Configuraciones de pantalla
 const unsigned int SCR_WIDTH = 800;
@@ -289,12 +289,19 @@ int main()
 
     //------------------------------------------------------------------------------------------------------------------------------------------------------------
     //------------------------------------------------------------------------------------------------------------------------------------------------------------
-    float puntosNuevos[160];
-    float puntosNuevos1[160];
+ 
+    float puntosNuevos1[150];
+    float puntosDinamicos[6];
     puntosNuevos1[0] = 0.0f;
     puntosNuevos1[1] = 0.0f;
     puntosNuevos1[2] = 0.0f;
-    int au = 1;
+    puntosDinamicos[0] = 0.0f;
+    puntosDinamicos[1] = 0.0f;
+    puntosDinamicos[2] = 0.0f;
+    puntosDinamicos[3] = 1.2f;
+    puntosDinamicos[4] = 1.2f;
+    puntosDinamicos[5] = 0.0f;
+    int au = 1,aux=0;
     for (int b = 3; b < 150; b++) {
         puntosNuevos1[b] = arrayreflecciones[1].r[au].x * tamnC;
         b++;
@@ -303,13 +310,12 @@ int main()
         puntosNuevos1[b] = arrayreflecciones[1].r[au].z * tamnC;
         au++;
     }
-    int contador = 3;
-    int aux = 0;
+   
     //------------------------------------------------------------------------------------------------------------------------------------------------------------
     //----------------------------------------------------------------- CONFIGURACION DEL VAO Y VBO---------------------------------------------------------------
 
     // first, configure the cube's VAO (and VBO)
-    unsigned int VBO[3], cubeVAO;
+    unsigned int VBO[4], cubeVAO;
     glGenVertexArrays(1, &cubeVAO);
     glGenBuffers(1, &VBO[0]);
 
@@ -327,7 +333,7 @@ int main()
 
 
     // second, configure the light's VAO (VBO stays the same; the vertices are the same for the light object which is also a 3D cube)
-    unsigned int lightCubeVAO, lineaVAO;
+    unsigned int lightCubeVAO, lineaVAO, lineaVAO1;
 
     glGenVertexArrays(1, &lightCubeVAO);
     glGenBuffers(1, &VBO[1]);
@@ -356,6 +362,21 @@ int main()
     // position attribute
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+
+
+    ///////
+    glGenVertexArrays(1, &lineaVAO1);
+    glGenBuffers(1, &VBO[3]);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[3]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(puntosDinamicos), puntosDinamicos, GL_DYNAMIC_DRAW);
+
+    glBindVertexArray(lineaVAO1);
+
+    // position attribute
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    //
     //------------------------------------------------------------------------------------------------------------------------------------------------------------
     //------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -363,6 +384,7 @@ int main()
     double tiempoGuardado = 0; // Variable la cual permitira encerar el tiempo cada vez que el rayo tope con una pared
     int indiceReflexion = 0; // indiceDeReflexion
     int contadorGraficarVertice = 0;
+    int contador = 3;
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window))
@@ -393,6 +415,7 @@ int main()
         CuboShader.use();
 
         CuboShader.setFloat("transparency", transparency);
+        printf("t: %.3f\n", transparency);
         CuboShader.setVec3("objectColor", 1.0f, 1.0f, 1.0f);
         CuboShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
         CuboShader.setVec3("lightPos", lightPos);
@@ -438,18 +461,21 @@ int main()
 
     //------------------------------------------------------------------------------------------------------------------------------------------------------------
     //----------------------------------------------------------------- DIBUJAR EL ICOSAEDRO (RAYO)---------------------------------------------------------------
-
+        
         float velocidadEnEje = (SPEED) / puntoDeOrigen.distancia(puntoDeDestino); // Velocidad la cual debera ser multiplicado cada eje
-
+       
+            
+        
 
         if (((glfwGetTime() - tiempoGuardado) * (SPEED)) >= puntoDeOrigen.distancia(puntoDeDestino)) { //Entra en el if cada vez que el rayo topa con una pared
 
             tiempoGuardado = glfwGetTime();
             puntoDeOrigen = puntoDeDestino; //El punto de origen es el punto de destino anterior
-            puntosNuevos[0 + contador] = puntoDeOrigen.x;
-            puntosNuevos[1 + contador] = puntoDeOrigen.y;
-            puntosNuevos[2 + contador] = puntoDeOrigen.z;
-            //dibujarline(puntosNuevos, lineaVAO, VBO[2]);
+            puntosDinamicos[0] = puntoDeOrigen.x;
+            puntosDinamicos[1] = puntoDeOrigen.y;
+            puntosDinamicos[2] = puntoDeOrigen.z;
+
+            //printf("valores de  puntos nuevo %f %f %f el contador \n/////////////////////////////////////////////////////////\n/////////////////////////////////////////////////////////\n/////////////////////////////////////////////////////////\n", puntosDinamicos[0], puntosDinamicos[1], puntosDinamicos[2]);
             //printf("valores de  puntos nuevo %f %f %f el contador es %i\n/////////////////////////////////////////////////////////\n", puntoDeOrigen.x, puntoDeOrigen.y, puntoDeOrigen.z, contador);
             //printf("valores de  puntos nuevo %f %f %f el contador es %i\n/////////////////////////////////////////////////////////\n", puntosNuevos1[0+contador], puntosNuevos1[1 + contador], puntosNuevos1[2 + contador], contador);
             contador += 3;
@@ -471,22 +497,25 @@ int main()
         model = glm::mat4(1.0f);
         IcosaedroShader.setMat4("model", model);
         //Movimiento del rayo
+        
+        
 
-
-        puntosNuevos[0 + contador] = puntoDeOrigen.x + ((puntoDeDestino.x - puntoDeOrigen.x)) * (glfwGetTime() - tiempoGuardado) * velocidadEnEje;
-        puntosNuevos[1 + contador] = puntoDeOrigen.y + ((puntoDeDestino.y - puntoDeOrigen.y)) * (glfwGetTime() - tiempoGuardado) * velocidadEnEje;
-        puntosNuevos[2 + contador] = puntoDeOrigen.z + ((puntoDeDestino.z - puntoDeOrigen.z)) * (glfwGetTime() - tiempoGuardado) * velocidadEnEje;
-        //printf("valores de  puntos nuevo %f %f %f el contador es %i\n/////////////////////////////////////////////////////////\n", puntosNuevos[0+contador], puntosNuevos[1+ contador], puntosNuevos[2+ contador], contador);
-
-
+        puntosDinamicos[3] = puntoDeOrigen.x + ((puntoDeDestino.x - puntoDeOrigen.x)) * (glfwGetTime() - tiempoGuardado) * velocidadEnEje;
+        puntosDinamicos[4] = puntoDeOrigen.y + ((puntoDeDestino.y - puntoDeOrigen.y)) * (glfwGetTime() - tiempoGuardado) * velocidadEnEje;
+        puntosDinamicos[5] = puntoDeOrigen.z + ((puntoDeDestino.z - puntoDeOrigen.z)) * (glfwGetTime() - tiempoGuardado) * velocidadEnEje;
+        //printf("valores de  puntos nuevo %f %f %f el contador \n/////////////////////////////////////////////////////////\n", puntosDinamicos[3], puntosDinamicos[4], puntosDinamicos[5]);
+        
+        actializarVBOline(VBO[3], 0, puntosDinamicos, sizeof(puntosDinamicos), GL_ARRAY_BUFFER);
+        
+       
 
         model = glm::translate(model,
-            glm::vec3(puntosNuevos[0 + contador], puntosNuevos[1 + contador], puntosNuevos[2 + contador]));
+            glm::vec3(puntosDinamicos[3], puntosDinamicos[4], puntosDinamicos[5]));
 
 
         model = glm::scale(model, glm::vec3(0.02f)); // Graficamos el rayo como un icosaedro
         IcosaedroShader.setMat4("model", model);
-        //dibujarline(puntosNuevos, lineaVAO, VBO[2]);
+        
         //Renderizar el rayo
         glBindVertexArray(lightCubeVAO);
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -511,6 +540,20 @@ int main()
         glDrawArrays(GL_LINE_STRIP, 0, contadorGraficarVertice);
 
 
+        // Dibujar linea dinamica
+        
+        LineaShader.setMat4("projection", projection);
+        LineaShader.setMat4("view", view);
+        model = glm::mat4(1.0f);
+        //model = glm::translate(model, lightPos);
+        //model = glm::scale(model, glm::vec3(0.1f)); // a smaller cube
+        LineaShader.setMat4("model", model);
+
+        glBindVertexArray(lineaVAO1);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        glDrawArrays(GL_LINE_STRIP, 0, 2);
+
+
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
@@ -523,9 +566,12 @@ int main()
     // ------------------------------------------------------------------------
     glDeleteVertexArrays(1, &cubeVAO);
     glDeleteVertexArrays(1, &lightCubeVAO);
+    glDeleteVertexArrays(1, &lineaVAO);
+    glDeleteVertexArrays(1, &lineaVAO1);
     glDeleteBuffers(1, &VBO[0]);
     glDeleteBuffers(1, &VBO[1]);
     glDeleteBuffers(1, &VBO[2]);
+    glDeleteBuffers(1, &VBO[3]);
 
 
     // glfw: terminate, clearing all previously allocated GLFW resources.
@@ -551,17 +597,22 @@ void processInput(GLFWwindow* window)
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         camera.ProcessKeyboard(RIGHT, deltaTime * 0.5);
     if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
-        if (transparency <= 1.0) {
-            transparency = transparency + 0.01;
-
+        if (transparency >= 0.1) {
+            transparency = transparency - 0.001;
+            printf("hola");
+        }
+        else {
+            transparency = 0.1;
         };
 
     }
 
     if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
-        if (transparency >= 0.0) {
-            transparency = transparency - 0.01;
-
+        if (transparency <= 1.0) {
+            transparency = transparency + 0.001;
+        }
+        else {
+            transparency = 1.0;
         };
     }
 
@@ -786,19 +837,8 @@ void laodRoom() {
 }
 
 
-void dibujarline(float verticeslinea[], unsigned int lineaVAO, unsigned int VBOlinea) {
+void actializarVBOline(unsigned int & id, unsigned int offset,void* data, unsigned int size, unsigned int type) {
 
-    //printf("%F", verticeslinea[0]);
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBOlinea);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(verticeslinea), verticeslinea, GL_DYNAMIC_DRAW);
-
-    glBindVertexArray(lineaVAO);
-
-
-    //model = glm::translate(model, lightPos);
-    //model = glm::scale(); // a smaller cube
-
-
-
+        glBindBuffer(type, id);
+        glBufferSubData(type, offset, size, data);
 }
