@@ -359,13 +359,13 @@ int main()
 
 
     ///////
-    glGenVertexArrays(1, &lineaVAO);
-    glGenBuffers(1, &VBO[2]);
+    glGenVertexArrays(1, &lineaVAO1);
+    glGenBuffers(1, &VBO[3]);
 
-    glBindBuffer(GL_ARRAY_BUFFER, VBO[2]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(puntosNuevos1), puntosNuevos1, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[3]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(puntosNuevos), puntosNuevos, GL_STATIC_DRAW);
 
-    glBindVertexArray(lineaVAO);
+    glBindVertexArray(lineaVAO1);
 
     // position attribute
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
