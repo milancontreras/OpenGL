@@ -309,7 +309,7 @@ int main()
     //----------------------------------------------------------------- CONFIGURACION DEL VAO Y VBO---------------------------------------------------------------
 
     // first, configure the cube's VAO (and VBO)
-    unsigned int VBO[3], cubeVAO;
+    unsigned int VBO[4], cubeVAO;
     glGenVertexArrays(1, &cubeVAO);
     glGenBuffers(1, &VBO[0]);
 
@@ -327,7 +327,7 @@ int main()
 
 
     // second, configure the light's VAO (VBO stays the same; the vertices are the same for the light object which is also a 3D cube)
-    unsigned int lightCubeVAO, lineaVAO;
+    unsigned int lightCubeVAO, lineaVAO, lineaVAO1;
 
     glGenVertexArrays(1, &lightCubeVAO);
     glGenBuffers(1, &VBO[1]);
@@ -356,6 +356,21 @@ int main()
     // position attribute
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+
+
+    ///////
+    glGenVertexArrays(1, &lineaVAO);
+    glGenBuffers(1, &VBO[2]);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[2]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(puntosNuevos1), puntosNuevos1, GL_STATIC_DRAW);
+
+    glBindVertexArray(lineaVAO);
+
+    // position attribute
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    //
     //------------------------------------------------------------------------------------------------------------------------------------------------------------
     //------------------------------------------------------------------------------------------------------------------------------------------------------------
 
