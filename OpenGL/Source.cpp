@@ -280,30 +280,15 @@ int main()
     puntoDeDestino.y = arrayreflecciones[1].r[1].y * tamnC;
     puntoDeDestino.z = arrayreflecciones[1].r[1].z * tamnC;
 
-    float verticesReflexiones[150], verticesDinamicos[6];// Vertices de las reflecciones // Vertices del punto de roigen y el rayo (dinamico)
-
+    float verticesDinamicos[150];// Vertices del punto de roigen y el rayo (dinamico)
+    int contadorTopes = 3;
     //inicializar los arreglos
-    verticesReflexiones[0] = 0.0f;
-    verticesReflexiones[1] = 0.0f;
-    verticesReflexiones[2] = 0.0f;
 
     verticesDinamicos[0] = 0.0f;
     verticesDinamicos[1] = 0.0f;
     verticesDinamicos[2] = 0.0f;
-    verticesDinamicos[3] = 0.0f;
-    verticesDinamicos[4] = 0.0f;
-    verticesDinamicos[5] = 0.0f;
 
-    //Guardar las reflexiones en un arreglo
-    int indiceReflexion = 1;
-    for (int i = 3; i < 150; i++) {
-        verticesReflexiones[i] = arrayreflecciones[1].r[indiceReflexion].x * tamnC;
-        i++;
-        verticesReflexiones[i] = arrayreflecciones[1].r[indiceReflexion].y * tamnC;
-        i++;
-        verticesReflexiones[i] = arrayreflecciones[1].r[indiceReflexion].z * tamnC;
-        indiceReflexion++;
-    }
+
  
     //------------------------------------------------------------------------------------------------------------------------------------------------------------
     //------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -312,7 +297,7 @@ int main()
     //------------------------------------------------------------------------------------------------------------------------------------------------------------
     //----------------------------------------------------------------- CONFIGURACION DEL VAO Y VBO---------------------------------------------------------------
 
-    unsigned int VBO[4], cubeVAO, lightCubeVAO, lineaVAO, lineaVAO1;
+    unsigned int VBO[3], cubeVAO, lightCubeVAO, lineaVAO;
     
     //--Cubo
     glGenVertexArrays(1, &cubeVAO);
@@ -343,29 +328,19 @@ int main()
     glGenVertexArrays(1, &lineaVAO);
     glGenBuffers(1, &VBO[2]);
     glBindBuffer(GL_ARRAY_BUFFER, VBO[2]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(verticesReflexiones), verticesReflexiones, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(verticesDinamicos), verticesDinamicos, GL_STATIC_DRAW);
     glBindVertexArray(lineaVAO);
         // position attribute
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
 
-    //--Linea de rebote a rayo
-    glGenVertexArrays(1, &lineaVAO1);
-    glGenBuffers(1, &VBO[3]);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO[3]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(verticesDinamicos), verticesDinamicos, GL_DYNAMIC_DRAW);
-    glBindVertexArray(lineaVAO1);
-        // position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
     //------------------------------------------------------------------------------------------------------------------------------------------------------------
     //------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
     double tiempoGuardado = 0; // Variable la cual permitira encerar el tiempo cada vez que el rayo tope con una pared
-    indiceReflexion = 0; // indiceDeReflexion
+    int indiceReflexion = 0; // indiceDeReflexion
     int contadorGraficarVertice = 0;
     // render loop
     // -----------
@@ -457,10 +432,10 @@ int main()
                 puntoDeOrigen = puntoDeDestino; //El nuevo punto de origen es el punto de destino anterior
 
                 //Punto de origen del vertice dinamico
-                verticesDinamicos[0] = puntoDeOrigen.x;
-                verticesDinamicos[1] = puntoDeOrigen.y;
-                verticesDinamicos[2] = puntoDeOrigen.z;
-       
+                verticesDinamicos[0+ contadorTopes] = puntoDeOrigen.x;
+                verticesDinamicos[1+ contadorTopes] = puntoDeOrigen.y;
+                verticesDinamicos[2+ contadorTopes] = puntoDeOrigen.z;
+                contadorTopes += 3;
                 //Nuevo punto de destino
                 puntoDeDestino.x = arrayreflecciones[1].r[indiceReflexion].x * tamnC;
                 puntoDeDestino.y = arrayreflecciones[1].r[indiceReflexion].y * tamnC;
@@ -471,17 +446,17 @@ int main()
 
         
         //Movimiento del rayo        
-        verticesDinamicos[3] = puntoDeOrigen.x + ((puntoDeDestino.x - puntoDeOrigen.x)) * (glfwGetTime() - tiempoGuardado) * velocidadEnEje;
-        verticesDinamicos[4] = puntoDeOrigen.y + ((puntoDeDestino.y - puntoDeOrigen.y)) * (glfwGetTime() - tiempoGuardado) * velocidadEnEje;
-        verticesDinamicos[5] = puntoDeOrigen.z + ((puntoDeDestino.z - puntoDeOrigen.z)) * (glfwGetTime() - tiempoGuardado) * velocidadEnEje;
+        verticesDinamicos[0+ contadorTopes] = puntoDeOrigen.x + ((puntoDeDestino.x - puntoDeOrigen.x)) * (glfwGetTime() - tiempoGuardado) * velocidadEnEje;
+        verticesDinamicos[1+ contadorTopes] = puntoDeOrigen.y + ((puntoDeDestino.y - puntoDeOrigen.y)) * (glfwGetTime() - tiempoGuardado) * velocidadEnEje;
+        verticesDinamicos[2+ contadorTopes] = puntoDeOrigen.z + ((puntoDeDestino.z - puntoDeOrigen.z)) * (glfwGetTime() - tiempoGuardado) * velocidadEnEje;
         
         //Actualizamos los puntos del arreglo dinamico en el VBO para dibujar la linea dinamica
-        actualizarVBOline(VBO[3], 0, verticesDinamicos, sizeof(verticesDinamicos), GL_ARRAY_BUFFER);
+        actualizarVBOline(VBO[2], 0, verticesDinamicos, sizeof(verticesDinamicos), GL_ARRAY_BUFFER);
         
         model = glm::mat4(1.0f);
         IcosaedroShader.setMat4("model", model);
 
-        model = glm::translate(model, glm::vec3(verticesDinamicos[3], verticesDinamicos[4], verticesDinamicos[5]));
+        model = glm::translate(model, glm::vec3(verticesDinamicos[0 + contadorTopes], verticesDinamicos[1 + contadorTopes], verticesDinamicos[2 + contadorTopes]));
 
         model = glm::scale(model, glm::vec3(0.02f)); // Graficamos el rayo como un icosaedro pequeno
         IcosaedroShader.setMat4("model", model);
@@ -495,7 +470,7 @@ int main()
 
 
         //------------------------------------------------------------------------------------------------------------------------------------------------------------
-        //----------------------------------------------------------------- DIBUJAR LINEA---------------------------------------------------------------
+        //----------------------------------------------------------------- DIBUJAR LINEA DINAMICA---------------------------------------------------------------
 
         LineaShader.use();
         LineaShader.setMat4("projection", projection);
@@ -505,22 +480,7 @@ int main()
 
         glBindVertexArray(lineaVAO);
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-        glDrawArrays(GL_LINE_STRIP, 0, contadorGraficarVertice);//Controlamos que se grafique una linea cada que el rayo topa una pared
-        //------------------------------------------------------------------------------------------------------------------------------------------------------------
-        //------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-        //------------------------------------------------------------------------------------------------------------------------------------------------------------
-        //----------------------------------------------------------------- DIBUJAR LINEA DINAMICA---------------------------------------------------------------
-
-        LineaShader.setMat4("projection", projection);
-        LineaShader.setMat4("view", view);
-        model = glm::mat4(1.0f);
-        LineaShader.setMat4("model", model);
-
-        glBindVertexArray(lineaVAO1);
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-        glDrawArrays(GL_LINE_STRIP, 0, 2);
+        glDrawArrays(GL_LINE_STRIP, 0, (contadorTopes/3)+1);
         //------------------------------------------------------------------------------------------------------------------------------------------------------------
         //------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -538,11 +498,9 @@ int main()
     glDeleteVertexArrays(1, &cubeVAO);
     glDeleteVertexArrays(1, &lightCubeVAO);
     glDeleteVertexArrays(1, &lineaVAO);
-    glDeleteVertexArrays(1, &lineaVAO1);
     glDeleteBuffers(1, &VBO[0]);
     glDeleteBuffers(1, &VBO[1]);
     glDeleteBuffers(1, &VBO[2]);
-    glDeleteBuffers(1, &VBO[3]);
 
 
     // glfw: terminate, clearing all previously allocated GLFW resources.
