@@ -42,6 +42,7 @@ void actualizarVBOline(unsigned int& id, unsigned int offset, void* data, unsign
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 800;
 
+
 // camara
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 float lastX = SCR_WIDTH / 2.0f;
@@ -271,14 +272,14 @@ int main()
     point puntoDeDestino, puntoDeOrigen;
 
     //Inicializacion de punto de Origen
-    puntoDeOrigen.x = arrayreflecciones[1].r[0].x * tamnC;
-    puntoDeOrigen.y = arrayreflecciones[1].r[0].y * tamnC;
-    puntoDeOrigen.z = arrayreflecciones[1].r[0].z * tamnC;
+    puntoDeOrigen.x = arrayreflecciones[INDICERAYO].r[0].x * tamnC;
+    puntoDeOrigen.y = arrayreflecciones[INDICERAYO].r[0].y * tamnC;
+    puntoDeOrigen.z = arrayreflecciones[INDICERAYO].r[0].z * tamnC;
 
     //Inicializacion de punto de Destino
-    puntoDeDestino.x = arrayreflecciones[1].r[1].x * tamnC;
-    puntoDeDestino.y = arrayreflecciones[1].r[1].y * tamnC;
-    puntoDeDestino.z = arrayreflecciones[1].r[1].z * tamnC;
+    puntoDeDestino.x = arrayreflecciones[INDICERAYO].r[1].x * tamnC;
+    puntoDeDestino.y = arrayreflecciones[INDICERAYO].r[1].y * tamnC;
+    puntoDeDestino.z = arrayreflecciones[INDICERAYO].r[1].z * tamnC;
 
     float verticesDinamicos[150];// Vertices del punto de roigen y el rayo (dinamico)
     int contadorTopes = 3;
@@ -324,7 +325,7 @@ int main()
     glEnableVertexAttribArray(0);
 
 
-    //--Linea de rebote a rebote
+    //--Linea 
     glGenVertexArrays(1, &lineaVAO);
     glGenBuffers(1, &VBO[2]);
     glBindBuffer(GL_ARRAY_BUFFER, VBO[2]);
@@ -341,7 +342,7 @@ int main()
 
     double tiempoGuardado = 0; // Variable la cual permitira encerar el tiempo cada vez que el rayo tope con una pared
     int indiceReflexion = 0; // indiceDeReflexion
-    int contadorGraficarVertice = 0;
+    //int contadorGraficarVertice = 0;
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window))
@@ -426,7 +427,7 @@ int main()
         else {
             if (((glfwGetTime() - tiempoGuardado) * (SPEED)) >= puntoDeOrigen.distancia(puntoDeDestino)) { //Entra en el if cada vez que el rayo topa con una pared
                 indiceReflexion++;
-                contadorGraficarVertice++;
+                //contadorGraficarVertice++;
                 tiempoGuardado = glfwGetTime();// Guardamos el tiempo justo cuando toca la pared
 
                 puntoDeOrigen = puntoDeDestino; //El nuevo punto de origen es el punto de destino anterior
@@ -437,9 +438,9 @@ int main()
                 verticesDinamicos[2+ contadorTopes] = puntoDeOrigen.z;
                 contadorTopes += 3;
                 //Nuevo punto de destino
-                puntoDeDestino.x = arrayreflecciones[1].r[indiceReflexion].x * tamnC;
-                puntoDeDestino.y = arrayreflecciones[1].r[indiceReflexion].y * tamnC;
-                puntoDeDestino.z = arrayreflecciones[1].r[indiceReflexion].z * tamnC;
+                puntoDeDestino.x = arrayreflecciones[INDICERAYO].r[indiceReflexion].x * tamnC;
+                puntoDeDestino.y = arrayreflecciones[INDICERAYO].r[indiceReflexion].y * tamnC;
+                puntoDeDestino.z = arrayreflecciones[INDICERAYO].r[indiceReflexion].z * tamnC;
 
             };
         };
@@ -507,7 +508,6 @@ int main()
     // ------------------------------------------------------------------
     glfwTerminate();
     return 0;
-
 }
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
