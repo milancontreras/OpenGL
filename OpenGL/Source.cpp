@@ -105,8 +105,8 @@ int main()
     // ----------------------------- 
 
     //glEnable(GL_DEPTH_TEST);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    //glEnable(GL_BLEND);
+    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     //Shaders
     Shader IcosaedroShader("shader_lightcube.vs", "shader_lightcube.fs");
@@ -345,9 +345,15 @@ int main()
     //int contadorGraficarVertice = 0;
     // render loop
     // -----------
+    glDisable(GL_BLEND);
+    glEnable(GL_DEPTH_TEST);
     while (!glfwWindowShouldClose(window))
     {
-
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        //glDisable(GL_DEPTH_TEST);
+        glEnable(GL_CULL_FACE);
+        //glCullFace(GL_FRONT);
 
 
         // per-frame time logic
@@ -392,7 +398,11 @@ int main()
         //------------------------------------------------------------------------------------------------------------------------------------------------------------
         //------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+        //glDisable(GL_BLEND);
+        //glEnable(GL_DEPTH_TEST);
 
+        glDisable(GL_BLEND);
+        glDisable(GL_CULL_FACE);
         //------------------------------------------------------------------------------------------------------------------------------------------------------------
         //----------------------------------------------------------------- DIBUJAR EL ICOSAEDRO (FUENTE)-------------------------------------------------------------
 
@@ -400,19 +410,36 @@ int main()
         IcosaedroShader.use();
         IcosaedroShader.setMat4("projection", projection);
         IcosaedroShader.setMat4("view", view);
+        IcosaedroShader.setVec3("objectColor", 0.0f, 0.0f, 0.8f);
         model = glm::mat4(1.0f);
+        model = glm::scale(model, glm::vec3(fuente.VisualRadius));
         IcosaedroShader.setMat4("model", model);
+        
+
+        if (blDrawFuente) {
+            glBindVertexArray(lightCubeVAO);
+            //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+            glDrawArrays(GL_TRIANGLES, 0, 60);
+        }
+
+
+        // Dibujar Las lineas
+        IcosaedroShader.setVec3("objectColor", 0.0f, 0.0f, 0.0f);
+        //model = glm::mat4(1.0f);
+        //model = glm::scale(model, glm::vec3(fuente.VisualRadius));
+        //IcosaedroShader.setMat4("model", model);
+
 
         if (blDrawFuente) {
             glBindVertexArray(lightCubeVAO);
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+            //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
             glDrawArrays(GL_TRIANGLES, 0, 60);
         }
 
         //------------------------------------------------------------------------------------------------------------------------------------------------------------
         //------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
 
     //------------------------------------------------------------------------------------------------------------------------------------------------------------
     //----------------------------------------------------------------- DIBUJAR EL ICOSAEDRO (RAYO)---------------------------------------------------------------
@@ -456,6 +483,7 @@ int main()
         
         model = glm::mat4(1.0f);
         IcosaedroShader.setMat4("model", model);
+        IcosaedroShader.setVec3("objectColor", 1.0f, 1.0f, 1.0f);
 
         model = glm::translate(model, glm::vec3(verticesDinamicos[0 + contadorTopes], verticesDinamicos[1 + contadorTopes], verticesDinamicos[2 + contadorTopes]));
 
@@ -481,7 +509,7 @@ int main()
 
         glBindVertexArray(lineaVAO);
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-        glDrawArrays(GL_LINE_STRIP, 0, (contadorTopes/3)+1);
+        glDrawArrays(GL_LINE_STRIP, 0, (contadorTopes/3)+1);//Vertices de la linea a ser dibujados
         //------------------------------------------------------------------------------------------------------------------------------------------------------------
         //------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -765,3 +793,84 @@ void actualizarVBOline(unsigned int & id, unsigned int offset,void* data, unsign
         glBindBuffer(type, id);
         glBufferSubData(type, offset, size, data);
 }
+
+/*
+void __fastcall TFormView::DrawScene(void) {
+    int     i, j;
+    double  df, //Distance of Front-plane of view
+        db; //Distance of Back-plane of view
+
+        //OpenGL parameters
+    
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    db = sqrt(3 * e * g * e * g + 2 * e * g * (abs(c.x) + abs(c.y) + abs(c.z)) + c.x * c.x + c.y * c.y + c.z * c.z);
+    if (d > db)
+        df = db;
+    else
+        df = 0.99 * d;
+
+    gluPerspective(180 * f / PI, double(w) / double(h), d - df, d + db);
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    o.x = d * cos(b) * cos(a) + c.x;
+    o.y = d * cos(b) * sin(a) + c.y;
+    o.z = d * sin(b) + c.z;
+    Up.x = -sin(a);
+    Up.y = cos(a);
+    Up.z = 0;
+    Up = Normal(Up / (c - o));
+
+    gluLookAt(o.x, o.y, o.z, c.x, c.y, c.z, Up.x, Up.y, Up.z);
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    //draw room
+    if (cuartoCargado) {
+        int tmpG = 0;
+        if (TestExtra == true) {
+            tmpG = floor(1000 * distancia / v_son);
+            if (tmpG > 1000) {
+                tmpG = 999;
+            }
+        }
+        for (i = 0;i < r.NP;i++)
+            DrawPlane(r.p[i], tmpG);
+
+    }
+
+    if (TestExtra) {
+        DrawSource(s1);
+        DrawReceptor(r1);
+        for (j = 0;j < s1.NRAYS;j++) {
+            for (i = 0;i < ry[j].N - 1;i++) {
+                color temp;
+                vector vg;
+                double ma, ms;
+                bool dinamico;
+
+                temp = Yellow;
+                vg = vec_gra[j][i];
+                ma = mod_vg[j][i];
+                ms = mod_vg[j][i + 1];
+
+                if (distancia > ma && distancia < ms)
+                    DrawVector(ry[j].r[i], vg, true, ma, temp, i, j);
+                else if (distancia > ms)
+                    DrawVector(ry[j].r[i], vg, false, ma, temp, i, j);
+
+            }
+        }
+    }
+
+    //draw grid
+    //DrawGrid();
+    //draw coordinates
+    glDisable(GL_DEPTH_TEST);
+    DrawAxis();
+    glEnable(GL_DEPTH_TEST);
+    //swap OpenGL buffers
+    SwapBuffers(hdc);
+}
+*/
