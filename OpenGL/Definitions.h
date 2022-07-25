@@ -14,5 +14,6 @@
 #define PI                  3.1415926535897932384626433832795
 #define MaxNPoints          200     //maximum Number of points
 #define MAX_NUM_REFLECTIONS 50
+#define INDICERAYO			1
 //---------------------------------------------------------------------------
 #endif

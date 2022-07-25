@@ -897,9 +897,9 @@ public:
         int
             IntersectedPlane,       //Indice del plano interesectado
             IntersectedTriangle,    //Indice del triangulo intersectado por plano
-            IntersectedTriangleId,  //Id �nico del tri�ngulo intersectado
-            NReflections,           //N�mero actual de reflexion
-            TNReflections,          //N�mero total de reflexiones
+            IntersectedTriangleId,  //Id unico del triangulo intersectado
+            NReflections,           //Numero actual de reflexion
+            TNReflections,          //Numero total de reflexiones
             LostRays = 0;             //Contador de rayos perdidos
 
         double      //Distancia al punto de intersecci�n
@@ -955,7 +955,7 @@ public:
                                     IntersectedPlane = P;
                                     IntersectedTriangle = T;
                                     IntersectedTriangleId = p[P].t[T].ID;
-                                    T = p[P].NT; //Para forzar la finalizaci�n del recorrido de tri�ngulos
+                                    T = p[P].NT; //Para forzar la finalizaci�n del recorrido de triangulos
                                 }
                             }
                         }
